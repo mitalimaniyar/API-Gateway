@@ -2,14 +2,17 @@ package org.jeavio.apigateway;
 
 import java.util.Map;
 
+import org.springframework.stereotype.Controller;
+
 import java.util.List;
 
+@Controller
 public class Swagger {
 	private String swagger;
 	private Map<String, String> info;
 	private String host;
 	private List<String> schemes;
-	private Map<String, UrlMapping> paths;
+	private Map<String, UrlService> paths;
 	private Map<String, Object> definitions;
 	
 	public String getSwagger() {
@@ -36,10 +39,10 @@ public class Swagger {
 	public void setSchemes(List<String> schemes) {
 		this.schemes = schemes;
 	}
-	public Map<String, UrlMapping> getPaths() {
+	public Map<String, UrlService> getPaths() {
 		return paths;
 	}
-	public void setPaths(Map<String, UrlMapping> paths) {
+	public void setPaths(Map<String, UrlService> paths) {
 		this.paths = paths;
 	}
 	public Map<String, Object> getDefinitions() {

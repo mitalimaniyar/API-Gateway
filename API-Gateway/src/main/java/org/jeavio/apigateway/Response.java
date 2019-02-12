@@ -2,6 +2,9 @@ package org.jeavio.apigateway;
 
 import java.util.Map;
 
+import org.springframework.stereotype.Controller;
+
+@Controller
 public class Response {
 	private String description;
 	private Map<String, Header> headers;
@@ -17,6 +20,11 @@ public class Response {
 	}
 	public void setHeaders(Map<String, Header> headers) {
 		this.headers = headers;
+	}
+	
+	@Override
+	public String toString() {
+		return "Response [description=" + description + ", headers=" + headers + "]";
 	}
 	
 	
