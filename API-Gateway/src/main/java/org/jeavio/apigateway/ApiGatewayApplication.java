@@ -22,6 +22,7 @@ public class ApiGatewayApplication {
 			Swagger get= objectMapper.readValue(new File("swagger-update-effective-staging.json"),Swagger.class);
 			//System.out.print(get.toString());
 			System.out.println(get.getPaths().get("/api/comments/{commentId}/delete").get().toString());
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

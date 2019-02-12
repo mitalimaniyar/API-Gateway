@@ -1,14 +1,20 @@
 package org.jeavio.apigateway;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-
+@JsonIgnoreProperties(ignoreUnknown=true)
+@Component
 public class HttpMethodService {
 
 	private List<Parameter> parameters;
@@ -25,6 +31,7 @@ public class HttpMethodService {
 		this.parameters = parameters;
 	}
 
+
 	public Map<String, Response> getResponses() {
 		return responses;
 	}
@@ -32,6 +39,8 @@ public class HttpMethodService {
 	public void setResponses(Map<String, Response> response) {
 		this.responses = response;
 	}
+
+
 
 	@JsonGetter("x-amazon-apigateway-auth")
 	public GatewayAuth getApigatewayAuth() {
@@ -55,20 +64,21 @@ public class HttpMethodService {
 	
 	@JsonAnySetter
 	public void set(String key,Object value) {
+
 		this.extraTuples.put(key, value);
 	}
-	
-	@JsonGetter
-	public Map<String, Object> get(){
+		
+	@JsonAnyGetter
+	public Map<String,Object> get() {
+
 		return extraTuples;
 	}
 
 	@Override
 	public String toString() {
+
 		return "HttpMethodService [parameters=" + parameters + ", responses=" + responses + ", apigatewayAuth="
 				+ apigatewayAuth + ", apigatewayIntegration=" + apigatewayIntegration + "]";
 	}
-
-	
 
 }

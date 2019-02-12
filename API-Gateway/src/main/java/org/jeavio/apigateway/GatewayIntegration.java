@@ -5,17 +5,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Component
 public class GatewayIntegration {
-	@Override
-	public String toString() {
-		return "GatewayIntegration [credentials=" + credentials + ", responses=" + responses + ", requestTemplates="
-				+ requestTemplates + ", requestParameters=" + requestParameters + ", uri=" + uri
-				+ ", passthroughBehaviour=" + passthroughBehaviour + ", httpMethod=" + httpMethod + ", cacheNamespace="
-				+ cacheNamespace + ", cacheKeyParameters=" + cacheKeyParameters + ", type=" + type + "]";
-	}
+	
 
 	private String credentials;
 	private Map<String, IntegrationResponse> responses = new LinkedHashMap<String, IntegrationResponse>();
@@ -24,6 +21,11 @@ public class GatewayIntegration {
 	private String uri;
 	private String passthroughBehaviour;
 	private String httpMethod;
+	private String cacheNamespace;
+	private List<String> cacheKeyParameters = new ArrayList<String>();
+	private String type;
+	
+
 
 	public String getCredentials() {
 		return credentials;
@@ -105,7 +107,15 @@ public class GatewayIntegration {
 		this.type = type;
 	}
 
-	private String cacheNamespace;
-	private List<String> cacheKeyParameters = new ArrayList<String>();
-	private String type;
+
+	
+	@Override
+	public String toString() {
+		return "GatewayIntegration [credentials=" + credentials + ", responses=" + responses + ", requestTemplates="
+				+ requestTemplates + ", requestParameters=" + requestParameters + ", uri=" + uri
+				+ ", passthroughBehaviour=" + passthroughBehaviour + ", httpMethod=" + httpMethod + ", cacheNamespace="
+				+ cacheNamespace + ", cacheKeyParameters=" + cacheKeyParameters + ", type=" + type + "]";
+	}
+
+
 }
