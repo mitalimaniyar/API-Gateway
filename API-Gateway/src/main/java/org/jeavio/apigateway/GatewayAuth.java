@@ -1,5 +1,8 @@
 package org.jeavio.apigateway;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class GatewayAuth {
 	
 	private String type;
