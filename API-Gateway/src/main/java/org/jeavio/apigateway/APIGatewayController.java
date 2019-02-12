@@ -47,7 +47,7 @@ public class APIGatewayController {
 		
         String uri = request.getRequestURI();
         System.out.print(uri);
-        //System.out.println(swaggerObject.getPaths().get("/api/comments/{commentId}/delete").get().toString());
+        System.out.println(swaggerObject.getPaths().get("/api/comments/{commentId}/delete").get().toString());
 	return new String("hi");
 	}
 }

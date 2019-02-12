@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
-@Controller
+
 public class Swagger {
 	private String swagger;
 	private Map<String, String> info;

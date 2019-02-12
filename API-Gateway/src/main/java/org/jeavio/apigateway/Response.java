@@ -2,9 +2,10 @@ package org.jeavio.apigateway;
 
 import java.util.Map;
 
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
-@Controller
+
+@Component
 public class Response {
 	private String description;
 	private Map<String, Header> headers;
