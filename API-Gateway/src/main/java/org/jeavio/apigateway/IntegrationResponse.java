@@ -3,6 +3,9 @@ package org.jeavio.apigateway;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class IntegrationResponse {
 	private String statusCode;
 	private Map<String,String> responseParameters=new LinkedHashMap<String,String>();

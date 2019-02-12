@@ -1,17 +1,26 @@
 package org.jeavio.apigateway;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
+@Component
 public class HttpMethodService {
 
 	private List<Parameter> parameters = new ArrayList<Parameter>();
 	private GatewayAuth apigatewayAuth;
 	private GatewayIntegration apigatewayIntegration;
+	private Map<String,Object> extraTuples=new LinkedHashMap<String,Object>();
 
 	public List<Parameter> getParameters() {
 		return parameters;
@@ -41,7 +50,15 @@ public class HttpMethodService {
 		this.apigatewayIntegration = apigatewayIntegration;
 	}
 	
+	@JsonAnySetter
+	public void set(String key,Object value) {
+		extraTuples.put(key, value);
+	}
 	
+	@JsonAnyGetter
+	public Map<String,Object> get() {
+		return extraTuples;
+	}
 
 	@Override
 	public String toString() {
