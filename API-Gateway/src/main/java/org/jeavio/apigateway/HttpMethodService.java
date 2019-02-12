@@ -1,6 +1,5 @@
 package org.jeavio.apigateway;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
+//@JsonIgnoreProperties(ignoreUnknown=true)
 @Component
 public class HttpMethodService {
 
@@ -39,8 +38,6 @@ public class HttpMethodService {
 	public void setResponses(Map<String, Response> response) {
 		this.responses = response;
 	}
-
-
 
 	@JsonGetter("x-amazon-apigateway-auth")
 	public GatewayAuth getApigatewayAuth() {

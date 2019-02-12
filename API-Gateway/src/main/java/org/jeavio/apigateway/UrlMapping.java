@@ -13,7 +13,6 @@ public class UrlMapping {
 	
 	private Map<String, HttpMethodService> httpMethodServiceMap = new LinkedHashMap<String, HttpMethodService>();
 	
-	
 	public void setGet(HttpMethodService object) {
 		httpMethodServiceMap.put("get",object);
 	}
