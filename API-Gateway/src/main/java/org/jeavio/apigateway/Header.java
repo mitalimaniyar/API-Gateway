@@ -1,8 +1,8 @@
 package org.jeavio.apigateway;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
-@Component
+@Controller
 public class Header {
 	private String type;
 

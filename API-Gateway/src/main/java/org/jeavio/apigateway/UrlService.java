@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Component
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class UrlMapping {
+public class UrlService {
 	
 	private Map<String, HttpMethodService> httpMethodServiceMap = new LinkedHashMap<String, HttpMethodService>();
 	
