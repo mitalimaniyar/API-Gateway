@@ -1,14 +1,11 @@
 package org.jeavio.apigateway;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Enumeration;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +22,7 @@ public class APIGatewayController {
 	private Swagger swaggerObject;
 	
 	@RequestMapping
-	public String UrlMapper() {
+	public HttpMethodService UrlMapper() {
 		
 		response.setContentType("application/json");
 		
@@ -37,17 +34,23 @@ public class APIGatewayController {
 //		}
 //		str.append(request.getParameter("hey"));
 		
-//		// Getting servlet request URL
-//        String url = request.getRequestURL().toString();
-//        System.out.print(url);
-//        // Getting servlet request query string.
-//        String queryString = request.getQueryString();
-//        System.out.print(queryString);
-//        // Getting request information without the hostname.
-		
         String uri = request.getRequestURI();
-        System.out.print(uri);
-        System.out.println(swaggerObject.getPaths().get("/api/comments/{commentId}/delete").get().toString());
-	return new String("hi");
+        String method = request.getMethod().toLowerCase();
+        HttpMethodService serviceBody=parseRequest(uri, method);
+        return serviceBody;
+        
+	}
+	
+	private HttpMethodService parseRequest(String uri,String method) {
+		Set<String> urlSet=swaggerObject.getPaths().keySet();
+        if(urlSet.contains(uri) && swaggerObject.getPaths().get(uri).get().keySet().contains(method)) {
+        	return swaggerObject.getPaths().get(uri).get(method);
+        }
+        else {
+
+        	HttpMethodService service= new HttpMethodService();
+        	service.set("402", "Forbidden error");
+        	return service;
+        }
 	}
 }

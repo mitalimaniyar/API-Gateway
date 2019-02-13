@@ -13,14 +13,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ApiGatewayApplication {
 	
 	static Swagger swaggerObject;
-	static ObjectMapper objectMapper = new ObjectMapper();
-	
+	final static ObjectMapper objectMapper = new ObjectMapper();
 	
 	public static void main(String[] args) {
 		
+		swaggerObject=parseJson("swagger-update-effective-staging.json");
+		SpringApplication.run(ApiGatewayApplication.class, args);	
+	}
+	
+	private static Swagger parseJson(String fileName)
+	{
+		Swagger swagger=null;
 		try {
 
-			swaggerObject= objectMapper.readValue(new File("swagger-update-effective-staging.json"),Swagger.class);
+			swagger= objectMapper.readValue(new File(fileName),Swagger.class);
 
 			//System.out.print(get.toString());
 
@@ -28,9 +34,10 @@ public class ApiGatewayApplication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		SpringApplication.run(ApiGatewayApplication.class, args);	
+		return swagger;
 	}
+	
+	
 	@Bean
 	public Swagger getSwagger() {
 		return swaggerObject;
