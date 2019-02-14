@@ -1,6 +1,7 @@
 package org.jeavio.apigateway;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class UrlService {
 	
 	private Map<String, HttpMethodService> httpMethodServiceMap = new LinkedHashMap<String, HttpMethodService>();
+	private List<Parameter> parameters;
 	
 	public void setGet(HttpMethodService object) {
 		httpMethodServiceMap.put("get",object);
@@ -44,13 +46,20 @@ public class UrlService {
 	public void setTrace(HttpMethodService object) {
 		httpMethodServiceMap.put("trace",object);
 	}
+	
 	public HttpMethodService get(String method) {
 		return httpMethodServiceMap.get(method);
 	}
-	
 	
 	public Map<String, HttpMethodService> get(){
 		return httpMethodServiceMap;
 	}
 
+	public List<Parameter> getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(List<Parameter> parameters) {
+		this.parameters = parameters;
+	}
 }

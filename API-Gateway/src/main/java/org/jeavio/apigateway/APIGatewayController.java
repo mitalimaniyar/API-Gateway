@@ -1,13 +1,17 @@
 package org.jeavio.apigateway;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriTemplate;
 
 @RestController
 public class APIGatewayController {
@@ -16,24 +20,22 @@ public class APIGatewayController {
 	private HttpServletRequest request;
 	
 	@Autowired
-	private HttpServletResponse response;
+	private static Swagger swaggerObject;
 	
-	@Autowired
-	private Swagger swaggerObject;
 	
 	@RequestMapping
 	public HttpMethodService UrlMapper() {
 		
-		response.setContentType("application/json");
+		//URL Validation
+		String requestHost=request.getHeader("host");
+		String requestScheme=request.getScheme();
+		if(!(swaggerObject.getHost().equals(requestHost) && swaggerObject.getSchemes().contains(requestScheme))) {
+			HttpMethodService service= new HttpMethodService();
+        	service.set("402", "Forbidden error");
+        	return service;
+		}
 		
-//		StringBuilder str=new StringBuilder();
-//		Enumeration<String> headers=request.getHeaderNames();
-//		while(headers.hasMoreElements()) {
-//			String name=headers.nextElement();
-//			str.append(name+" : "+request.getHeader(name)+" \n");
-//		}
-//		str.append(request.getParameter("hey"));
-		
+		//URL parsing
         String uri = request.getRequestURI();
         String method = request.getMethod().toLowerCase();
         HttpMethodService serviceBody=parseRequest(uri, method);
@@ -41,16 +43,60 @@ public class APIGatewayController {
         
 	}
 	
+	
+	//To get Object of HttpMethodService using uri and request method
 	private HttpMethodService parseRequest(String uri,String method) {
-		Set<String> urlSet=swaggerObject.getPaths().keySet();
+		Set<String> urlSet=swaggerObject.getPaths().keySet(); //Set of URis
+		
+		
+		//Check whether the request method is allowed
         if(urlSet.contains(uri) && swaggerObject.getPaths().get(uri).get().keySet().contains(method)) {
         	return swaggerObject.getPaths().get(uri).get(method);
         }
         else {
-
-        	HttpMethodService service= new HttpMethodService();
-        	service.set("402", "Forbidden error");
-        	return service;
+			
+        	// Get List of UriTemplate objects
+			List<UriTemplate> templateList = new ArrayList<UriTemplate>();
+			for (String key : urlSet) {
+				UriTemplate uriTemplate = new UriTemplate(key);
+				templateList.add(uriTemplate);
+			}
+			
+			// Check
+			String matchedUri=null;
+			UriTemplate matchedTemplate=null;
+			for (UriTemplate urit : templateList) {
+				if (urit.matches(uri)) {	
+					matchedUri=urit.toString();
+					matchedTemplate=urit;
+					break;
+				}
+			}
+			
+			//URI Template Match
+			if(matchedUri!=null && swaggerObject.getPaths().get(matchedUri).get().keySet().contains(method)) {
+				Map<String,String> pathParams=matchedTemplate.match(matchedUri);
+				for(String param:pathParams.keySet())
+					request.setAttribute(param,pathParams.get(param));
+	        	return swaggerObject.getPaths().get(uri).get(method);
+	        }
+			else {
+	        	HttpMethodService service= new HttpMethodService();
+	        	service.set("402", "Forbidden error");
+	        	return service;
+			}
         }
 	}
+	
+	//To get x-amazon-apigateway-integration Object from url & method
+	private static GatewayIntegration getIntegrationObject(String uri,String method)
+	{
+		Set<String> urlSet=swaggerObject.getPaths().keySet(); //Set of URLs
+		//Check whether the request method is allowed
+        if(urlSet.contains(uri) && swaggerObject.getPaths().get(uri).get().keySet().contains(method)) {
+        	return swaggerObject.getPaths().get(uri).get(method).getApigatewayIntegration();
+        }
+        return null;
+	}
+	
 }
