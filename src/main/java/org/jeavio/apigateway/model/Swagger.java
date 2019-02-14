@@ -11,7 +11,7 @@ public class Swagger {
 	private Map<String, String> info;
 	private String host;
 	private List<String> schemes;
-	private Map<String, UrlService> paths;
+	private Map<String, UrlObject> paths;
 	private Map<String, Object> definitions;
 	
 	public String getSwagger() {
@@ -38,10 +38,10 @@ public class Swagger {
 	public void setSchemes(List<String> schemes) {
 		this.schemes = schemes;
 	}
-	public Map<String, UrlService> getPaths() {
+	public Map<String, UrlObject> getPaths() {
 		return paths;
 	}
-	public void setPaths(Map<String, UrlService> paths) {
+	public void setPaths(Map<String, UrlObject> paths) {
 		this.paths = paths;
 	}
 	public Map<String, Object> getDefinitions() {

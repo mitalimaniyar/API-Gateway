@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jeavio.apigateway.Templates;
 import org.jeavio.apigateway.model.GatewayIntegration;
-import org.jeavio.apigateway.model.HttpMethodService;
+import org.jeavio.apigateway.model.HttpMethodObject;
 import org.jeavio.apigateway.model.Swagger;
 import org.jeavio.apigateway.service.URLMethodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class APIGatewayController {
 	URLMethodService urlMethodService;
 	
 	@RequestMapping
-	public HttpMethodService UrlMapper(HttpServletRequest request) {
+	public HttpMethodObject UrlMapper(HttpServletRequest request) {
 		
 		//URL Validation
 //		String requestHost=request.getHeader("host");
@@ -45,7 +45,7 @@ public class APIGatewayController {
 		//URL parsing
         String uri = request.getRequestURI();
         String method = request.getMethod().toLowerCase();
-        HttpMethodService serviceBody=urlMethodService.parseRequest(uri, method);
+        HttpMethodObject serviceBody=urlMethodService.parseRequest(uri, method);
         return serviceBody;
         
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jeavio.apigateway.model.HttpMethodService;
+import org.jeavio.apigateway.model.HttpMethodObject;
 import org.jeavio.apigateway.model.Swagger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class URLMethodService {
 	@Autowired
 	Swagger swagger;
 	
-	public HttpMethodService parseRequest(String uri,String method) {
+	public HttpMethodObject parseRequest(String uri,String method) {
 		Set<String> urlSet=swagger.getPaths().keySet(); //Set of URis
 		
 		
@@ -60,7 +60,7 @@ public class URLMethodService {
 	        	return swagger.getPaths().get(uri).get(method);
 	        }
 			else {
-	        	HttpMethodService service= new HttpMethodService();
+	        	HttpMethodObject service= new HttpMethodObject();
 	        	service.set("402", "Forbidden error");
 	        	return service;
 			}
