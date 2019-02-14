@@ -41,7 +41,7 @@ public class ApiGatewayApplication {
 
 	@Bean
 	public Swagger getSwagger() {
-		Swagger swagger = swaggerService.parse("swagger-update-effective-staging.json");
+		Swagger swagger = swaggerService.parse("/home/jeavio64/Downloads/swagger-update-effective-staging.json");
 //		generateTemplates(swagger);
 		return swagger;
 	}
