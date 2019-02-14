@@ -2,10 +2,8 @@ package org.jeavio.apigateway.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.velocity.Template;
 import org.jeavio.apigateway.model.HttpMethodObject;
 import org.jeavio.apigateway.model.Swagger;
-import org.jeavio.apigateway.model.SwaggerTemplates;
 import org.jeavio.apigateway.service.TemplateService;
 import org.jeavio.apigateway.service.URLMethodService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +18,6 @@ public class APIGatewayController {
 	
 	@Autowired
 	URLMethodService urlMethodService;
-	
-	@Autowired
-	SwaggerTemplates swaggerTemplates;
 	
 	@Autowired
 	TemplateService templateService;

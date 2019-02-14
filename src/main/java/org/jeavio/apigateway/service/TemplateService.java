@@ -17,8 +17,10 @@ public class TemplateService {
 	
 	public Template getRequiredTemplate(String uri,String method,String templateType) {
 		UriTemplate uriTemplate=urlMethodService.getUriTemp(uri);
-		if(templateType.equals("requestTemplate"))
-			return swaggerTemplates.get(uriTemplate.toString(), method).getRequestTemplate();
+		if(templateType.equals("requestTemplate")) {
+		Template t=swaggerTemplates.get(uriTemplate.toString(), method).getRequestTemplate();
+		return t;
+		}
 		else
 			return swaggerTemplates.get(uriTemplate.toString(),method).getResponseTemplate(templateType);
 	}
