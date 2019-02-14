@@ -20,17 +20,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootApplication
 public class ApiGatewayApplication {
 	
-	static Swagger swaggerObject;
 	final static ObjectMapper objectMapper = new ObjectMapper();
 	static Map<String,GetTemplate> retrieveTemplate;
 	
 	//Main
 	public static void main(String[] args) {
 		
-		swaggerObject=parseJson("swagger-update-effective-staging.json");
-		retrieveTemplate=generateTemplates();
+//		swaggerObject=parseJson("swagger-update-effective-staging.json");
+//		retrieveTemplate=generateTemplates();
 		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
+	
+
+	@Bean
+	public Swagger getSwagger() {
+		Swagger swagger = parseJson("swagger-update-effective-staging.json");
+//		generateTemplates(swagger);
+		return swagger;
+	}
+	
 	
 	//Json Parsing before application starts
 	private static Swagger parseJson(String fileName)
@@ -51,7 +59,7 @@ public class ApiGatewayApplication {
 	
 	
 	//Template Objects Generation
-	private static Map<String, GetTemplate> generateTemplates() {
+	private static Map<String, GetTemplate> generateTemplates(Swagger swaggerObject) {
 		
 		BufferedWriter writer;
 		String vtlTemplate;
@@ -87,12 +95,6 @@ public class ApiGatewayApplication {
 		}
 		return null;
 	}
-	
-	@Bean
-	public Swagger getSwagger() {
-		return swaggerObject;
-	}
-	
 	
 }
 
