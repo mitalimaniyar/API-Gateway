@@ -10,7 +10,9 @@ import java.util.Set;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
-
+import org.jeavio.apigateway.model.GetTemplate;
+import org.jeavio.apigateway.model.IntegrationResponse;
+import org.jeavio.apigateway.model.Swagger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

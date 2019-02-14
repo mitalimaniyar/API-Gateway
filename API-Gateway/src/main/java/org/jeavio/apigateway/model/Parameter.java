@@ -1,4 +1,4 @@
-package org.jeavio.apigateway;
+package org.jeavio.apigateway.model;
 
 
 import org.springframework.stereotype.Component;

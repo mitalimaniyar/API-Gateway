@@ -1,9 +1,10 @@
-package org.jeavio.apigateway;
+package org.jeavio.apigateway.controller;
 
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.jeavio.apigateway.model.Swagger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

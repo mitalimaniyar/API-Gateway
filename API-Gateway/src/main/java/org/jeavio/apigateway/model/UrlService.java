@@ -1,4 +1,4 @@
-package org.jeavio.apigateway;
+package org.jeavio.apigateway.model;
 
 import java.util.LinkedHashMap;
 import java.util.List;

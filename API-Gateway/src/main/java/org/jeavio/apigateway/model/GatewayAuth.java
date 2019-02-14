@@ -1,9 +1,10 @@
-package org.jeavio.apigateway;
+package org.jeavio.apigateway.model;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class Header {
+public class GatewayAuth {
+	
 	private String type;
 
 	public String getType() {
@@ -13,4 +14,10 @@ public class Header {
 	public void setType(String type) {
 		this.type = type;
 	}
+
+	@Override
+	public String toString() {
+		return "GatewayAuth [type=" + type + "]";
+	}
+	
 }
