@@ -1,7 +1,6 @@
 package org.jeavio.apigateway;
 
 import org.jeavio.apigateway.model.Swagger;
-import org.jeavio.apigateway.service.IntegrationService;
 import org.jeavio.apigateway.service.SwaggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

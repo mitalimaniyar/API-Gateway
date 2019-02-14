@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.jeavio.apigateway.model.HttpMethodObject;
 import org.jeavio.apigateway.model.Swagger;
+import org.jeavio.apigateway.model.UrlObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;
@@ -26,8 +27,7 @@ public class URLMethodService {
         	return swagger.getPaths().get(uri).get(method);
         }
         else 
-        {
-			
+        {		
 //        	 //Get List of UriTemplate objects
 			List<UriTemplate> templateList = new ArrayList<UriTemplate>();
 			for (String key : urlSet) {
@@ -57,7 +57,7 @@ public class URLMethodService {
 					 * 
 					 */
 				}
-	        	return swagger.getPaths().get(uri).get(method);
+	        	return swagger.getPaths().get(matchedUri).get(method);
 	        }
 			else {
 	        	HttpMethodObject service= new HttpMethodObject();
@@ -66,6 +66,36 @@ public class URLMethodService {
 			}
 		}
 
-	}	
+	}
+	
+	
+	public UriTemplate getUriTemp(String uri) {
+		Set<String> urlSet=swagger.getPaths().keySet(); //Set of URis
+		
+		
+//		//Check whether the request method is allowed
+        if(urlSet.contains(uri)){
+        	return new UriTemplate(uri);
+        }
+        else 
+        {		
+//        	 //Get List of UriTemplate objects
+			List<UriTemplate> templateList = new ArrayList<UriTemplate>();
+			for (String key : urlSet) {
+				UriTemplate uriTemplate = new UriTemplate(key);
+				templateList.add(uriTemplate);
+			}
+			
+//			 //Check
+			UriTemplate matchedTemplate=null;
+			for (UriTemplate urit : templateList) {
+				if (urit.matches(uri)) {	
+					matchedTemplate=urit;
+					break;
+				}
+			}
+	        	return matchedTemplate;
+	    }
+	}
 
 }
