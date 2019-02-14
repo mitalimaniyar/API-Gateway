@@ -13,6 +13,8 @@ import org.apache.velocity.app.VelocityEngine;
 import org.jeavio.apigateway.model.GetTemplate;
 import org.jeavio.apigateway.model.IntegrationResponse;
 import org.jeavio.apigateway.model.Swagger;
+import org.jeavio.apigateway.service.SwaggerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +27,9 @@ public class ApiGatewayApplication {
 	final static ObjectMapper objectMapper = new ObjectMapper();
 	static Map<String,GetTemplate> retrieveTemplate;
 	
+	@Autowired
+	SwaggerService swaggerService;
+	
 	//Main
 	public static void main(String[] args) {
 		
@@ -36,7 +41,7 @@ public class ApiGatewayApplication {
 
 	@Bean
 	public Swagger getSwagger() {
-		Swagger swagger = parseJson("swagger-update-effective-staging.json");
+		Swagger swagger = swaggerService.parse("swagger-update-effective-staging.json");
 //		generateTemplates(swagger);
 		return swagger;
 	}
