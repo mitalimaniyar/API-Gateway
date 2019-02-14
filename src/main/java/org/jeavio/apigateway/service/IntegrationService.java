@@ -5,7 +5,9 @@ import java.util.Set;
 import org.jeavio.apigateway.model.GatewayIntegration;
 import org.jeavio.apigateway.model.Swagger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class IntegrationService {
 	
 	@Autowired
@@ -19,7 +21,7 @@ public class IntegrationService {
         if(urlSet.contains(uri) && swagger.getPaths().get(uri).get().keySet().contains(method)) {
         	return swagger.getPaths().get(uri).get(method).getApigatewayIntegration();
         }
-        return null;
+        return new GatewayIntegration();
 	}
 
 }

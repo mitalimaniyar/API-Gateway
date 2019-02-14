@@ -12,6 +12,7 @@ public class Parameter {
 	private boolean required;
 	private String type;
 	private String format;
+
 	public String getName() {
 		return name;
 	}
@@ -24,11 +25,7 @@ public class Parameter {
 	public void setIn(String in) {
 		this.in = in;
 	}
-	@Override
-	public String toString() {
-		return "Parameter [name=" + name + ", in=" + in + ", description=" + description + ", required=" + required
-				+ ", type=" + type + ", format=" + format + "]";
-	}
+	
 	public String getDescription() {
 		return description;
 	}
@@ -54,4 +51,9 @@ public class Parameter {
 		this.format = format;
 	}
 	
+	@Override
+	public String toString() {
+		return "Parameter [name=" + name + ", in=" + in + ", description=" + description + ", required=" + required
+				+ ", type=" + type + ", format=" + format + "]";
+	}
 }
