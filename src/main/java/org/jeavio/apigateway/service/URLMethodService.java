@@ -28,8 +28,11 @@ public class URLMethodService {
 		}
 		if(matchedTemplate!=null)
 			return swagger.getPaths().get(uri).get(method);
-		else
-			return new HttpMethodObject();
+		else {
+			HttpMethodObject object=new HttpMethodObject();
+			object.set("402","Forbidden error-Method not allowed");
+			return object;
+		}
 
 	}
 	
