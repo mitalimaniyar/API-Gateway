@@ -69,12 +69,12 @@ public class URLMethodService {
 	}
 	
 	
-	public UriTemplate getUriTemp(String uri) {
+	public UriTemplate getUriTemp(String uri,String method) throws Exception {
 		Set<String> urlSet=swagger.getPaths().keySet(); //Set of URis
 		
 		
 //		//Check whether the request method is allowed
-        if(urlSet.contains(uri)){
+        if(urlSet.contains(uri) && swagger.getPaths().get(uri).get().keySet().contains(method)){
         	return new UriTemplate(uri);
         }
         else 
@@ -94,7 +94,12 @@ public class URLMethodService {
 					break;
 				}
 			}
+			if(matchedTemplate!=null && swagger.getPaths().get(matchedTemplate.toString()).get().keySet().contains(method)) {
 	        	return matchedTemplate;
+			}
+			else {
+				throw new Exception("No match Found");
+			}
 	    }
 	}
 

@@ -16,7 +16,13 @@ public class TemplateService {
 	SwaggerTemplates swaggerTemplates;
 	
 	public Template getRequiredTemplate(String uri,String method,String templateType) {
-		UriTemplate uriTemplate=urlMethodService.getUriTemp(uri);
+		UriTemplate uriTemplate=null;
+		try {
+			uriTemplate = urlMethodService.getUriTemp(uri,method);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(templateType.equals("requestTemplate")) {
 		Template t=swaggerTemplates.get(uriTemplate.toString(), method).getRequestTemplate();
 		return t;
