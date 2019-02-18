@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.minidev.json.JSONArray;
+
 @RestController
 public class APIGatewayController {
 	
@@ -38,6 +40,7 @@ public class APIGatewayController {
 		//URL parsing
         String uri = request.getRequestURI();
         String method = request.getMethod().toLowerCase();
+        
         HttpMethodObject serviceBody=urlMethodService.parseRequest(uri, method);
        // return serviceBody;
         return templateService.getRequiredTemplate(uri, method,"requestTemplate").toString();

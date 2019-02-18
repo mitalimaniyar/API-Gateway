@@ -1,9 +1,6 @@
 package org.jeavio.apigateway.model;
 
 import java.util.Map;
-
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 public class Swagger {
