@@ -2,7 +2,6 @@ package org.jeavio.apigateway.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.jeavio.apigateway.model.HttpMethodObject;
@@ -27,7 +26,7 @@ public class URLMethodService {
 			e.printStackTrace();
 		}
 		if(matchedTemplate!=null)
-			return swagger.getPaths().get(uri).get(method);
+			return swagger.getPaths().get(matchedTemplate.toString()).get(method);
 		else {
 			HttpMethodObject object=new HttpMethodObject();
 			object.set("402","Forbidden error-Method not allowed");
