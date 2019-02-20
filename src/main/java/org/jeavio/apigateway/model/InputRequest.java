@@ -10,7 +10,6 @@ import com.jayway.jsonpath.JsonPath;
 
 import net.minidev.json.JSONValue;
 
-
 @Component
 public class InputRequest {
 
@@ -37,7 +36,7 @@ public class InputRequest {
     
 	public String json(String reference) {
     	Object patht=JsonPath.read(properties,reference);
-    	String content=JSONValue.toJSONString(patht);
+    	String content =JSONValue.toJSONString(patht);
 		return content;
     }
     
