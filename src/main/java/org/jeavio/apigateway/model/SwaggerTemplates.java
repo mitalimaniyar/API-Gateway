@@ -2,6 +2,7 @@ package org.jeavio.apigateway.model;
 
 import java.util.Map;
 
+
 public class SwaggerTemplates {
 		Map<String,Map<String,TemplateObjects>> templates;
 

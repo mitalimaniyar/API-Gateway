@@ -3,7 +3,6 @@ package org.jeavio.apigateway.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import org.jeavio.apigateway.model.HttpMethodObject;
 import org.jeavio.apigateway.model.Swagger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,13 +70,3 @@ public class URLMethodService {
 	}
 
 }
-
-//Map<String,String> pathParams=matchedTemplate.match(matchedUri);
-//for(String param:pathParams.keySet()) {
-////	request.setAttribute(param,pathParams.get(param));
-//	/*
-//	 * Code to add pathparam in a list
-//	 * yet to be decided how
-//	 * 
-//	 */
-//}

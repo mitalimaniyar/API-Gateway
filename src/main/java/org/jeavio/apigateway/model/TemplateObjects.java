@@ -3,7 +3,9 @@ package org.jeavio.apigateway.model;
 import java.util.Map;
 
 import org.apache.velocity.Template;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TemplateObjects {
 	private Template requestTemplate;
 	private Map<String,Template> responseTemplate;

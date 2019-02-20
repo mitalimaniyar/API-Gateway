@@ -1,4 +1,4 @@
-package org.jeavio.apigateway;
+package org.jeavio.apigateway.config;
 
 import java.io.BufferedWriter;
 import java.io.File;

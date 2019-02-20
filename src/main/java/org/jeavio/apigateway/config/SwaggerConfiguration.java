@@ -1,4 +1,4 @@
-package org.jeavio.apigateway;
+package org.jeavio.apigateway.config;
 
 import org.jeavio.apigateway.model.Swagger;
 import org.jeavio.apigateway.service.SwaggerService;
@@ -17,7 +17,4 @@ public class SwaggerConfiguration {
 		Swagger swagger = swaggerService.parse("/home/jeavio64/Downloads/swagger-update-effective-staging.json");
 		return swagger;
 	}	
-	
-	
-
 }
