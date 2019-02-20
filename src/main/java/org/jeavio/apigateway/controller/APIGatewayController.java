@@ -1,18 +1,12 @@
 package org.jeavio.apigateway.controller;
 
-import java.io.StringWriter;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-
 import org.jeavio.apigateway.model.InputRequest;
 import org.jeavio.apigateway.model.Swagger;
 import org.jeavio.apigateway.service.RequestObjectService;
-import org.jeavio.apigateway.service.TemplateService;
 import org.jeavio.apigateway.service.URLMethodService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +24,6 @@ public class APIGatewayController {
 	
 	@Autowired
 	URLMethodService urlMethodService;
-	
-	@Autowired
-	TemplateService templateService;
 	
 	@Autowired
 	RequestObjectService requestObjectService;
@@ -53,22 +44,26 @@ public class APIGatewayController {
         String method = request.getMethod().toLowerCase();
         
         InputRequest inputRequest=requestObjectService.getInputObject(uri, method, allParams, requestBody);
-       
-		VelocityContext context=new VelocityContext();
-        context.put("input",inputRequest);
-//      Template t=templateService.getRequiredTemplate(uri, method,"requestTemplate");
-        VelocityEngine velocityEngine=new VelocityEngine();
-        Template t=velocityEngine.getTemplate("sample.vm");
-        StringWriter writer=new StringWriter();
-        t.merge(context, writer);
-        System.out.print(writer.toString());
-        
+        String ParsedRequestBody=requestObjectService.getRequestBody(uri, method, inputRequest, requestBody);
+//		VelocityContext context=new VelocityContext();
+//        context.put("input",inputRequest);
+////      Template t=templateService.getRequiredTemplate(uri, method,"requestTemplate");
+//        VelocityEngine velocityEngine=new VelocityEngine();
+//        Template t=velocityEngine.getTemplate("sample.vm");
+//        StringWriter writer=new StringWriter();
+//        t.merge(context, writer);
+//        System.out.print(writer.toString());
+//        
 //        #end
         
 //      HttpMethodObject serviceBody=urlMethodService.parseRequest(uri, method);
        // return serviceBody;
-        return templateService.getRequiredTemplate(uri, method,"requestTemplate").toString();
+//        return templateService.getRequiredTemplate(uri, method,"requestTemplate").toString();
        // return templateService.getRequiredTemplate(uri, method,"responseTemplate","200").toString();
+       if(ParsedRequestBody!=null)
+    	   return ParsedRequestBody;
+       else 
+    	   return "hello world";
        
 	}
 
