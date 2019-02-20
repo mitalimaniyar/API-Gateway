@@ -1,1 +1,1 @@
-$input.path('$')
+$input.json('$')
