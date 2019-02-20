@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.jayway.jsonpath.JsonPath;
 
+import net.minidev.json.JSONValue;
+
 
 @Component
 public class InputRequest {
@@ -35,12 +37,7 @@ public class InputRequest {
     
 	public String json(String reference) {
     	Object patht=JsonPath.read(properties,reference);
-    	
-    	String content = patht.toString()
-		    			.replaceAll("=", "\":\"")
-		    			.replaceAll(",", "\",\"")
-		    			.replaceAll("}", "\"}")
-		    			.replaceAll("{", "{\"");
+    	String content=JSONValue.toJSONString(patht);
 		return content;
     }
     
