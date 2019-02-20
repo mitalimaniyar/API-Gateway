@@ -45,17 +45,7 @@ public class APIGatewayController {
         
         InputRequest inputRequest=requestObjectService.getInputObject(uri, method, allParams, requestBody);
         String ParsedRequestBody=requestObjectService.getRequestBody(uri, method, inputRequest, requestBody);
-//		VelocityContext context=new VelocityContext();
-//        context.put("input",inputRequest);
-////      Template t=templateService.getRequiredTemplate(uri, method,"requestTemplate");
-//        VelocityEngine velocityEngine=new VelocityEngine();
-//        Template t=velocityEngine.getTemplate("sample.vm");
-//        StringWriter writer=new StringWriter();
-//        t.merge(context, writer);
-//        System.out.print(writer.toString());
-//        
-//        #end
-        
+
 //      HttpMethodObject serviceBody=urlMethodService.parseRequest(uri, method);
        // return serviceBody;
 //        return templateService.getRequiredTemplate(uri, method,"requestTemplate").toString();

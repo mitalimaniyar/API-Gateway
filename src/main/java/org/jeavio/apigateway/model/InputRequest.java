@@ -31,9 +31,10 @@ public class InputRequest {
     	properties.putAll(map);
     }
     
-    public Object json(String reference) {
+    public String json(String reference) {
     	Object patht=JsonPath.read(properties,reference);
-		return patht;
+    	
+		return patht.toString();
     }
     
     public Map<String,Object> params(){

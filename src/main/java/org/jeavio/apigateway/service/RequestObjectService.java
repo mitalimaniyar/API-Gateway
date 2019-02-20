@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-
+import org.apache.velocity.app.VelocityEngine;
 import org.jeavio.apigateway.model.GatewayIntegration;
 import org.jeavio.apigateway.model.InputRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,15 @@ public class RequestObjectService {
 	
 	
 	public String getRequestBody(String uri,String method,InputRequest inputRequest,String requestBody) {
-		GatewayIntegration integrationObject=integrationService.getIntegrationObject(uri, method);
+		UriTemplate uriTemplate=new UriTemplate("/");
+		try {
+			uriTemplate=urlMethodService.getUriTemp(uri, method);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		GatewayIntegration integrationObject=integrationService.getIntegrationObject(uriTemplate.toString(), method);
+		
 		Template requestTemplate;
 		if(integrationObject.getRequestTemplates()!=null) {
 			if(integrationObject.getRequestTemplates().get("application/json")!=null && integrationObject.getRequestTemplates().get("application/json").equals("__passthrough__")) {
@@ -65,6 +73,8 @@ public class RequestObjectService {
 			else{
 				
 				requestTemplate=templateService.getRequiredTemplate(uri, method,"requestTemplate");
+//				VelocityEngine ve=new VelocityEngine();
+//				requestTemplate=ve.getTemplate("sample.vm");
 				if(requestTemplate!=null) {
 						VelocityContext context=new VelocityContext();
 				        context.put("input",inputRequest);
