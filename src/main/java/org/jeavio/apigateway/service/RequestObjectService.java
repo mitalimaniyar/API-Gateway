@@ -63,15 +63,19 @@ public class RequestObjectService {
 				return requestBody;
 			}
 			else{
-				requestTemplate=templateService.getRequiredTemplate(uri, method,"requestTemplate");
 				
-				VelocityContext context=new VelocityContext();
-		        context.put("input",inputRequest);
-		        
-		        StringWriter writer=new StringWriter();
-		        requestTemplate.merge(context, writer);
-		        
-				return writer.toString();
+				requestTemplate=templateService.getRequiredTemplate(uri, method,"requestTemplate");
+				if(requestTemplate!=null) {
+						VelocityContext context=new VelocityContext();
+				        context.put("input",inputRequest);
+				        
+				        StringWriter writer=new StringWriter();
+				        requestTemplate.merge(context, writer);
+				        
+						return writer.toString();
+				}
+				else
+					return null;
 			}
 			
 		}
