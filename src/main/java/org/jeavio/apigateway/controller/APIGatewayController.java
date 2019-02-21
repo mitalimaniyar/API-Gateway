@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.client.methods.HttpGet;
 import org.jeavio.apigateway.model.InputRequest;
 import org.jeavio.apigateway.model.Swagger;
 import org.jeavio.apigateway.service.RequestObjectService;
@@ -28,6 +29,9 @@ public class APIGatewayController {
 	@Autowired
 	RequestObjectService requestObjectService;
 	
+	@Autowired
+	Map<String, String> cognitoIdMap;
+	
 	@RequestMapping
 	public String UrlMapper(HttpServletRequest request,@RequestParam Map<String,String> allParams,@RequestBody(required=false) String requestBody) {
 		
@@ -45,7 +49,8 @@ public class APIGatewayController {
         
         InputRequest inputRequest=requestObjectService.getInputObject(uri, method, allParams, requestBody);
         String ParsedRequestBody=requestObjectService.getRequestBody(uri, method, inputRequest, requestBody);
-
+        
+        
 //      HttpMethodObject serviceBody=urlMethodService.parseRequest(uri, method);
        // return serviceBody;
 //        return templateService.getRequiredTemplate(uri, method,"requestTemplate").toString();

@@ -107,15 +107,4 @@ public class GatewayIntegration {
 		this.type = type;
 	}
 
-
-	
-	@Override
-	public String toString() {
-		return "GatewayIntegration [credentials=" + credentials + ", responses=" + responses + ", requestTemplates="
-				+ requestTemplates + ", requestParameters=" + requestParameters + ", uri=" + uri
-				+ ", passthroughBehaviour=" + passthroughBehaviour + ", httpMethod=" + httpMethod + ", cacheNamespace="
-				+ cacheNamespace + ", cacheKeyParameters=" + cacheKeyParameters + ", type=" + type + "]";
-	}
-
-
 }
