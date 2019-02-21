@@ -71,21 +71,6 @@ public class RequestObjectService {
 			}
 			else{
 				
-//				requestTemplate=templateService.getRequiredTemplate(uri, method,"requestTemplate");
-//				
-//				requestTemplate=ve.getTemplate("sample.vm");
-//				
-//				if(requestTemplate!=null) {
-//						
-//				       
-//				        
-//				        
-//				        requestTemplate.merge(context, writer);
-//				        
-//						return writer.toString();
-//				}
-//				else
-//					return null;
 				VelocityContext context=new VelocityContext();
 				 context.put("input",inputRequest);
 				StringWriter writer=new StringWriter();
