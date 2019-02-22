@@ -187,7 +187,7 @@ public class RequestObjectService {
 //		 		HttpGet httpGet=new HttpGet(targetUri);
 //		 		
 //		 		if(!headerParams.isEmpty()) {
-//		 			for(String param:headerParams.keySet()) {
+//		 			for(String param:headerParams.key	Set()) {
 //		 				httpGet.addHeader(param, headerParams.get(param));
 //		 			}
 //		 		}
