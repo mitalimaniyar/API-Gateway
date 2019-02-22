@@ -32,6 +32,21 @@ public class APIGatewayController {
 	@Autowired
 	Map<String, String> cognitoIdMap;
 	
+	@RequestMapping("/api/login")
+	public String checking(HttpServletRequest request,@RequestParam Map<String,String> allParams,@RequestBody(required=false) String requestBody) {
+		
+		String uri = request.getRequestURI();
+        String method = request.getMethod().toLowerCase();
+        
+        InputRequest inputRequest=requestObjectService.getInputObject(uri, method, allParams, requestBody);
+        String ParsedRequestBody=requestObjectService.getRequestBody(request,inputRequest, requestBody);
+        
+        if(ParsedRequestBody!=null)
+     	   return ParsedRequestBody;
+        else 
+     	   return "hello world";
+	}	
+	
 	@RequestMapping
 	public String UrlMapper(HttpServletRequest request,@RequestParam Map<String,String> allParams,@RequestBody(required=false) String requestBody) {
 		
@@ -46,9 +61,9 @@ public class APIGatewayController {
 		//URL parsing
         String uri = request.getRequestURI();
         String method = request.getMethod().toLowerCase();
-        
+        cognitoIdMap.put("mytoken", "Demo CogId");
         InputRequest inputRequest=requestObjectService.getInputObject(uri, method, allParams, requestBody);
-        String ParsedRequestBody=requestObjectService.getRequestBody(uri, method, inputRequest, requestBody);
+        String ParsedRequestBody=requestObjectService.getRequestBody(request,inputRequest, requestBody);
         
         
 //      HttpMethodObject serviceBody=urlMethodService.parseRequest(uri, method);
