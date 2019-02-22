@@ -67,9 +67,9 @@ public class APIGatewayController {
         
         
 //      HttpMethodObject serviceBody=urlMethodService.parseRequest(uri, method);
-       // return serviceBody;
+//        return serviceBody;
 //        return templateService.getRequiredTemplate(uri, method,"requestTemplate").toString();
-       // return templateService.getRequiredTemplate(uri, method,"responseTemplate","200").toString();
+//        return templateService.getRequiredTemplate(uri, method,"responseTemplate","200").toString();
        if(ParsedRequestBody!=null)
     	   return ParsedRequestBody;
        else 
