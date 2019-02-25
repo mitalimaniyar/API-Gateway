@@ -2,6 +2,7 @@ package org.jeavio.apigateway.service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -17,11 +18,15 @@ import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpMessage;
 import org.apache.http.HttpRequest;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.velocity.VelocityContext;
@@ -33,6 +38,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
+import com.jayway.jsonpath.JsonPath;
+
+import net.minidev.json.JSONValue;
 
 @Service
 public class RequestObjectService {
@@ -132,7 +141,7 @@ public class RequestObjectService {
 		return context1;
 	}
 
-	public String createRequest(HttpServletRequest request, InputRequest inputRequest, String requestBody) {
+	public HttpUriRequest createRequest(HttpServletRequest request, InputRequest inputRequest, String requestBody) {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
@@ -161,48 +170,99 @@ public class RequestObjectService {
 				String paramValue = interpretParamValue(request, value, inputRequest);
 
 				switch (recurseCall[2]) {
-					case "header":
-						headerParams.put(recurseCall[3], paramValue);
-						break;
-					case "path":
-						pathParams.put(recurseCall[3], paramValue);
-						break;
-					case "querystring":
-						querystringParams.put(recurseCall[3], paramValue);
-						break;
+				case "header":
+					headerParams.put(recurseCall[3], paramValue);
+					break;
+				case "path":
+					pathParams.put(recurseCall[3], paramValue);
+					break;
+				case "querystring":
+					querystringParams.put(recurseCall[3], paramValue);
+					break;
 				}
 			}
 		}
 
 //		Creating Request Body
-		String ParsedRequestBody=getRequestBody(request,inputRequest, requestBody);
-		
+		String ParsedRequestBody = getRequestBody(request, inputRequest, requestBody);
+
 //		Creating Url
-		URI targetUri = getTargetUri(integrationObject,pathParams,querystringParams);
-		
+		URI targetUri = getTargetUri(integrationObject, pathParams, querystringParams);
+
 //		Creating Request
-//		
-//		 switch(integrationObject.getHttpMethod()) {
-//		 	case "GET":
-//		 		HttpGet httpGet=new HttpGet(targetUri);
-//		 		
-//		 		if(!headerParams.isEmpty()) {
-//		 			for(String param:headerParams.key	Set()) {
-//		 				httpGet.addHeader(param, headerParams.get(param));
-//		 			}
-//		 		}
-//		 		break;
-//		 	case "POST":
+		StringEntity entity = null;
+		switch (integrationObject.getHttpMethod()) {
+
+		case "GET":
+
+			HttpGet httpGet = new HttpGet("http://localhost:9090/home");
+
+			if (!headerParams.isEmpty()) {
+				for (String param : headerParams.keySet()) {
+					httpGet.addHeader(param, headerParams.get(param));
+				}
+			}
+			return httpGet;
+
+		case "POST":
 //		 		HttpPost httpPost=new HttpPost(targetUri);
-//		 		httpPost.setEntity(entity);
-//
-//		 		break;
-//		 	
-//		 }
-//		 httpUriRequest.setHeader("accept","application/json");
-//	 	 if(request.getHeader("referer")!=null)
-//	 		httpUriRequest.setHeader("referer",request.getHeader("referer"));
-		return targetUri.toString();
+			HttpPost httpPost = new HttpPost("http://localhost:9090/home");
+			if (!headerParams.isEmpty()) {
+				for (String param : headerParams.keySet()) {
+					httpPost.addHeader(param, headerParams.get(param));
+				}
+			}
+			try {
+				entity = new StringEntity(ParsedRequestBody);
+				entity.setContentType("application/json");
+
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			httpPost.setEntity(entity);
+			return httpPost;
+
+		case "PUT":
+			HttpPut httpPut = new HttpPut("http://localhost:9090/home");
+
+			try {
+				entity = new StringEntity(ParsedRequestBody);
+				entity.setContentType("application/json");
+
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			httpPut.setEntity(entity);
+			return httpPut;
+
+		case "PATCH":
+			HttpPatch httpPatch = new HttpPatch("http://localhost:9090/home");
+
+			try {
+				entity = new StringEntity(ParsedRequestBody);
+				entity.setContentType("application/json");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			httpPatch.setEntity(entity);
+			return httpPatch;
+
+		case "DELETE":
+			HttpDelete httpDelete = new HttpDelete("http://localhost:9090/home");
+
+			if (!headerParams.isEmpty()) {
+				for (String param : headerParams.keySet()) {
+					httpDelete.addHeader(param, headerParams.get(param));
+				}
+			}
+			return httpDelete;
+		default:
+			HttpGet httpGet2 = new HttpGet("http://localhost:9090/home");
+			return httpGet2;
+		}
+
 	}
 
 	private String interpretParamValue(HttpServletRequest request, String value, InputRequest inputRequest) {
@@ -212,7 +272,7 @@ public class RequestObjectService {
 		} else if (value.equals("context.identity.cognitoIdentityId")) {
 			paramValue = getCognitoId(request);
 		} else {
-			String paramName = value.substring(value.lastIndexOf(".")+1);
+			String paramName = value.substring(value.lastIndexOf(".") + 1);
 			paramValue = (String) inputRequest.params().get(paramName);
 		}
 		return paramValue;
@@ -221,45 +281,41 @@ public class RequestObjectService {
 
 	private URI getTargetUri(GatewayIntegration integrationObject, Map<String, String> pathParams,
 			Map<String, String> querystringParams) {
-		
-		URI targetUri=null;
+
+		URI targetUri = null;
 		UriTemplate targetUrl = new UriTemplate(integrationObject.getUri());
 		if (targetUrl.getVariableNames().isEmpty()) {
 			try {
-				targetUri=new URI(targetUrl.toString());
+				targetUri = new URI(targetUrl.toString());
 			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			targetUri = targetUrl.expand(pathParams);
 		}
-		else {
-			targetUri=targetUrl.expand(pathParams);
-		}
-		
+
 //		Add querystrin if exist
-		if(!querystringParams.isEmpty()) {
-			
-			List<NameValuePair> queryParams=new ArrayList<NameValuePair>();
+		if (!querystringParams.isEmpty()) {
+
+			List<NameValuePair> queryParams = new ArrayList<NameValuePair>();
 			for (Entry<String, String> entry : querystringParams.entrySet()) {
-				if(entry.getValue()!=null)
-		        queryParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-		    }
-			
-			URIBuilder builder = new URIBuilder()
-		            .setScheme(targetUri.getScheme())
-		            .setHost(targetUri.getHost())
-		            .setPath(targetUri.getPath())
-		            .setParameters(queryParams);
-			URI uri=null;
-		    try {
-				 uri = builder.build();
+				if (entry.getValue() != null)
+					queryParams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+			}
+
+			URIBuilder builder = new URIBuilder().setScheme(targetUri.getScheme()).setHost(targetUri.getHost())
+					.setPath(targetUri.getPath()).setParameters(queryParams);
+			URI uri = null;
+			try {
+				uri = builder.build();
 			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		    return uri;
+			return uri;
 		}
-		
+
 		return targetUri;
 	}
 
