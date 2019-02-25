@@ -59,11 +59,7 @@ public class APIGatewayController {
         InputRequest inputRequest=requestObjectService.getInputObject(uri, method, allParams, requestBody);
         
         HttpUriRequest requestSend=requestObjectService.createRequest(request, inputRequest, requestBody);
-        requestSend.setHeader("Accept", "application/json");
-		requestSend.setHeader("Content-type", "application/json");
-		if (request.getHeader("referer") != null)
-			requestSend.setHeader("referer", request.getHeader("referer"));
-		
+        
         HttpClient httpclient = HttpClients.createDefault();
         HttpResponse response=null;
         try {

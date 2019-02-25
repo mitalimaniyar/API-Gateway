@@ -13,13 +13,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpMessage;
-import org.apache.http.HttpRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -27,7 +22,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHttpRequest;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -184,85 +178,24 @@ public class RequestObjectService {
 		}
 
 //		Creating Request Body
-		String ParsedRequestBody = getRequestBody(request, inputRequest, requestBody);
+		String parsedRequestBody = getRequestBody(request, inputRequest, requestBody);
 
-//		Creating Url
+//		Creating Url including Queryparams
 		URI targetUri = getTargetUri(integrationObject, pathParams, querystringParams);
 
 //		Creating Request
-		StringEntity entity = null;
-		switch (integrationObject.getHttpMethod()) {
-
-		case "GET":
-
-			HttpGet httpGet = new HttpGet("http://localhost:9090/home");
-
-			if (!headerParams.isEmpty()) {
-				for (String param : headerParams.keySet()) {
-					httpGet.addHeader(param, headerParams.get(param));
-				}
+		HttpUriRequest targetRequest=getRequiredRequest(targetUri,integrationObject.getHttpMethod(),parsedRequestBody);
+		if (!headerParams.isEmpty()) {
+			for (String param : headerParams.keySet()) {
+				targetRequest.addHeader(param, headerParams.get(param));
 			}
-			return httpGet;
-
-		case "POST":
-//		 		HttpPost httpPost=new HttpPost(targetUri);
-			HttpPost httpPost = new HttpPost("http://localhost:9090/home");
-			if (!headerParams.isEmpty()) {
-				for (String param : headerParams.keySet()) {
-					httpPost.addHeader(param, headerParams.get(param));
-				}
-			}
-			try {
-				entity = new StringEntity(ParsedRequestBody);
-				entity.setContentType("application/json");
-
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			httpPost.setEntity(entity);
-			return httpPost;
-
-		case "PUT":
-			HttpPut httpPut = new HttpPut("http://localhost:9090/home");
-
-			try {
-				entity = new StringEntity(ParsedRequestBody);
-				entity.setContentType("application/json");
-
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			httpPut.setEntity(entity);
-			return httpPut;
-
-		case "PATCH":
-			HttpPatch httpPatch = new HttpPatch("http://localhost:9090/home");
-
-			try {
-				entity = new StringEntity(ParsedRequestBody);
-				entity.setContentType("application/json");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			httpPatch.setEntity(entity);
-			return httpPatch;
-
-		case "DELETE":
-			HttpDelete httpDelete = new HttpDelete("http://localhost:9090/home");
-
-			if (!headerParams.isEmpty()) {
-				for (String param : headerParams.keySet()) {
-					httpDelete.addHeader(param, headerParams.get(param));
-				}
-			}
-			return httpDelete;
-		default:
-			HttpGet httpGet2 = new HttpGet("http://localhost:9090/home");
-			return httpGet2;
 		}
-
+		targetRequest.setHeader("Accept", "application/json");
+		targetRequest.setHeader("Content-type", "application/json");
+		if (request.getHeader("referer") != null)
+			targetRequest.setHeader("referer", request.getHeader("referer"));
+		
+		return targetRequest;
 	}
 
 	private String interpretParamValue(HttpServletRequest request, String value, InputRequest inputRequest) {
@@ -317,6 +250,54 @@ public class RequestObjectService {
 		}
 
 		return targetUri;
+	}
+
+	private HttpUriRequest getRequiredRequest(URI targetUri, String httpMethod, String parsedRequestBody) {
+		StringEntity entity = null;
+		switch (httpMethod) {
+
+		case "GET":
+			HttpGet httpGet = new HttpGet("http://localhost:9090/home");
+			return httpGet;
+
+		case "POST":
+//		 		HttpPost httpPost=new HttpPost(targetUri);
+			HttpPost httpPost = new HttpPost("http://localhost:9090/home");
+			try {
+				entity = new StringEntity(parsedRequestBody);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			httpPost.setEntity(entity);
+			return httpPost;
+
+		case "PUT":
+			HttpPut httpPut = new HttpPut("http://localhost:9090/home");
+			try {
+				entity = new StringEntity(parsedRequestBody);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			httpPut.setEntity(entity);
+			return httpPut;
+
+		case "PATCH":
+			HttpPatch httpPatch = new HttpPatch("http://localhost:9090/home");
+			try {
+				entity = new StringEntity(parsedRequestBody);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			httpPatch.setEntity(entity);
+			return httpPatch;
+
+		case "DELETE":
+			HttpDelete httpDelete = new HttpDelete("http://localhost:9090/home");
+			return httpDelete;
+		default:
+			HttpGet httpGet2 = new HttpGet("http://localhost:9090/home");
+			return httpGet2;
+		}
 	}
 
 }
