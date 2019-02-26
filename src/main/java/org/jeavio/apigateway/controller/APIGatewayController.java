@@ -40,7 +40,7 @@ public class APIGatewayController {
 	Map<String, String> cognitoIdMap;
 	
 	@Autowired
-	ResponseObjectService responseHandler;
+	ResponseObjectService responseObjectService;
 
 	@RequestMapping
 	public String UrlMapper(HttpServletRequest request, @RequestParam Map<String, String> allParams,
@@ -54,6 +54,9 @@ public class APIGatewayController {
 //			Error
 //		}
 
+		response.setContentType("application/json");
+		String responseBody=null;
+		
 		// URL parsing
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
@@ -64,28 +67,8 @@ public class APIGatewayController {
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;
-//		ResponseHandler<String> responseHandler=null;
+
 		try {
-			
-			
-			// Create a custom response handler
-//			responseHandler = new ResponseHandler<String>() {
-//
-//                @Override
-//                public String handleResponse(
-//                        final HttpResponse myresponse) throws ClientProtocolException, IOException {
-//                    int status = myresponse.getStatusLine().getStatusCode();
-//                    response.setContentType("application/json");
-//                    if (status >= 200 && status < 300) {
-//                        HttpEntity entity = myresponse.getEntity();
-//                        
-//                        return entity != null ? EntityUtils.toString(entity) : null;
-//                    } else {
-//                        throw new ClientProtocolException("Unexpected response status: " + status);
-//                    }
-//                }
-//
-//            };
             
             backendResponse = (CloseableHttpResponse) httpclient.execute(requestSend);
            
@@ -94,24 +77,24 @@ public class APIGatewayController {
 			e1.printStackTrace();
 		}
 		
-		String responseBody=null;
+//      Populate Cognito Id cache
+		if (uri.equals("/api/login")) {
+			cognitoIdMap.put("mytoken", "Demo CogId");
+//      	  cognitoIdMap.put(response.getFirstHeader("sessionToken").getValue(),response.getFirstHeader("identityId").getValue());
+
+		}
+		
+		
 		try {
-			responseBody=responseHandler.getResponseBody(backendResponse);
+			responseBody=responseObjectService.getResponseBody(backendResponse);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//        Populate Cognito Id cache
-		if (uri.equals("/api/login")) {
-			cognitoIdMap.put("mytoken", "Demo CogId");
-//        	  cognitoIdMap.put(response.getFirstHeader("sessionToken").getValue(),response.getFirstHeader("identityId").getValue());
 
-		}
 		
-		response.setContentType("application/json");
-		response.addHeader("Baeldung-Example-Header", "Value-HttpServletResponse");
-		response.setStatus(400);
+//		response.setStatus(400);
 		return responseBody;
 
 	}
