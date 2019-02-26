@@ -83,15 +83,10 @@ public class RequestObjectService {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
-		UriTemplate uriTemplate = new UriTemplate("/");
+		
 		VelocityEngine velocityEngine = new VelocityEngine();
-		try {
-			uriTemplate = urlMethodService.getUriTemp(uri, method);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uriTemplate.toString(), method);
+		
+		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uri, method);
 
 //		Template requestTemplate;
 		if (integrationObject.getRequestTemplates() != null
@@ -141,15 +136,7 @@ public class RequestObjectService {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
-		UriTemplate uriTemplate = new UriTemplate("/");
-
-		try {
-			uriTemplate = urlMethodService.getUriTemp(uri, method);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uriTemplate.toString(), method);
+		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uri, method);
 
 //		Setting Parameters
 		Map<String, String> requestParameters = integrationObject.getRequestParameters();

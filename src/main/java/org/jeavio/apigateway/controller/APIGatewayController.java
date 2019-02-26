@@ -7,19 +7,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.jeavio.apigateway.model.RequestResponse;
 import org.jeavio.apigateway.model.Swagger;
 import org.jeavio.apigateway.service.RequestObjectService;
+import org.jeavio.apigateway.service.ResponseObjectService;
 import org.jeavio.apigateway.service.URLMethodService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +40,7 @@ public class APIGatewayController {
 	Map<String, String> cognitoIdMap;
 	
 	@Autowired
-	ResponseHandler<String> responseHandler;
+	ResponseObjectService responseHandler;
 
 	@RequestMapping
 	public String UrlMapper(HttpServletRequest request, @RequestParam Map<String, String> allParams,
@@ -101,7 +96,8 @@ public class APIGatewayController {
 		
 		String responseBody=null;
 		try {
-			responseBody=responseHandler.handleResponse(backendResponse);
+			responseBody=responseHandler.getResponseBody(backendResponse);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -115,7 +111,7 @@ public class APIGatewayController {
 		
 		response.setContentType("application/json");
 		response.addHeader("Baeldung-Example-Header", "Value-HttpServletResponse");
-		
+		response.setStatus(400);
 		return responseBody;
 
 	}
