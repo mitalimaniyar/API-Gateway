@@ -44,7 +44,8 @@ public class APIGatewayController {
 	@Autowired
 	Map<String, String> cognitoIdMap;
 	
-	
+	@Autowired
+	ResponseHandler<String> responseHandler;
 
 	@RequestMapping
 	public String UrlMapper(HttpServletRequest request, @RequestParam Map<String, String> allParams,
@@ -62,34 +63,34 @@ public class APIGatewayController {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
-		InputRequest inputRequest = requestObjectService.getInputObject(uri, method, allParams, requestBody);
+		InputRequest inputRequest = requestObjectService.getInputObject(allParams, requestBody);
 
-		HttpUriRequest requestSend = requestObjectService.createRequest(request, inputRequest, requestBody);
+		HttpUriRequest requestSend = requestObjectService.createRequest(inputRequest, requestBody);
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;
-		ResponseHandler<String> responseHandler=null;
+//		ResponseHandler<String> responseHandler=null;
 		try {
 			
 			
 			// Create a custom response handler
-			responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse myresponse) throws ClientProtocolException, IOException {
-                    int status = myresponse.getStatusLine().getStatusCode();
-                    response.setContentType("application/json");
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = myresponse.getEntity();
-                        
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
+//			responseHandler = new ResponseHandler<String>() {
+//
+//                @Override
+//                public String handleResponse(
+//                        final HttpResponse myresponse) throws ClientProtocolException, IOException {
+//                    int status = myresponse.getStatusLine().getStatusCode();
+//                    response.setContentType("application/json");
+//                    if (status >= 200 && status < 300) {
+//                        HttpEntity entity = myresponse.getEntity();
+//                        
+//                        return entity != null ? EntityUtils.toString(entity) : null;
+//                    } else {
+//                        throw new ClientProtocolException("Unexpected response status: " + status);
+//                    }
+//                }
+//
+//            };
             
             backendResponse = (CloseableHttpResponse) httpclient.execute(requestSend);
            
