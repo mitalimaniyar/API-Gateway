@@ -108,8 +108,8 @@ public class RequestObjectService {
 				context.put("input", inputRequest);
 				StringWriter writer = new StringWriter();
 				String template = integrationObject.getRequestTemplates().get("application/json");
-				boolean status = velocityEngine.evaluate(context, writer, "requestTemplate", template);
-				if (status)
+				
+				if (velocityEngine.evaluate(context, writer, "requestTemplate", template))
 					return writer.toString();
 				else
 					return null;

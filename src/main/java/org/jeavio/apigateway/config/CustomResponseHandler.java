@@ -1,6 +1,7 @@
 package org.jeavio.apigateway.config;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,6 +10,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.jeavio.apigateway.model.RequestResponse;
 import org.jeavio.apigateway.model.IntegrationResponse;
 import org.jeavio.apigateway.model.Swagger;
@@ -18,6 +21,7 @@ import org.jeavio.apigateway.service.URLMethodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.util.UriTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,29 +51,54 @@ public class CustomResponseHandler {
 
 				String uri = request.getRequestURI();
 				String method = request.getMethod();
+				
+				UriTemplate uriTemplate = new UriTemplate("/");
+				try {
+					uriTemplate = urlMethodService.getUriTemp(uri, method);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-				IntegrationResponse response;
-				response = integrationService.getIntegrationObject(uri, method).getResponses().get(status.toString());
-				if (response == null) {
-					response=integrationService.getIntegrationObject(uri, method).getResponses().get("default");
-					String expectedstatus = response.getStatusCode();
+				IntegrationResponse integratedResponse;
+				integratedResponse = integrationService.getIntegrationObject(uriTemplate.toString(), method).getResponses().get(status.toString());
+				if (integratedResponse == null) {
+					integratedResponse=integrationService.getIntegrationObject(uriTemplate.toString(), method).getResponses().get("default");
+					String expectedstatus = integratedResponse.getStatusCode();
 					
 					if(!expectedstatus.equals(status.toString()))
 						throw new ClientProtocolException("Unexpected response status: " + status);
-					
+										
+				}
+				
+				
+				HttpEntity entity = myresponse.getEntity();
+				if(entity==null)
+					return null;
+				
+//				Parsing templates
+				String template = null;
+				if(integratedResponse.getResponseTemplates()!=null)
+					template=integratedResponse.getResponseTemplates().get("application/json");
+				
+				if(template==null)
+					return null;
+				else if(template.equals("__passthrough__"))
+					return EntityUtils.toString(entity);
+				else {
 					ObjectMapper objectMapper=new ObjectMapper();
-					HttpEntity entity = myresponse.getEntity();
-					if(entity==null)
-						return null;
 					RequestResponse outputResponse=objectMapper.readValue(EntityUtils.toString(entity).getBytes(),RequestResponse.class);
 					
+					VelocityEngine velocityEngine=new VelocityEngine();
+					VelocityContext context = new VelocityContext();
 					
-				}
-				if (status >= 200 && status < 300) {
-					HttpEntity entity = myresponse.getEntity();
-					return entity != null ? EntityUtils.toString(entity) : null;
-				} else {
-					throw new ClientProtocolException("Unexpected response status: " + status);
+					context.put("input", outputResponse);
+					StringWriter writer = new StringWriter();
+					
+					if (velocityEngine.evaluate(context, writer, "responseTemplate", template))
+						return writer.toString();
+					else
+						return null;
 				}
 			}
 		};
