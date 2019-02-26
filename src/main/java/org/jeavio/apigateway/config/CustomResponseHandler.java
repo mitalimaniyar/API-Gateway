@@ -18,24 +18,22 @@ public class CustomResponseHandler {
 
 	@Autowired
 	HttpServletRequest request;
-	
+
 	@Bean
-	public ResponseHandler<String> getResponseHandler(){
+	public ResponseHandler<String> getResponseHandler() {
 		ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
-            @Override
-            public String handleResponse(
-                    final HttpResponse myresponse) throws ClientProtocolException, IOException {
-                int status = myresponse.getStatusLine().getStatusCode();
-                if (status >= 200 && status < 300) {
-                    HttpEntity entity = myresponse.getEntity();
-                    
-                    return entity != null ? EntityUtils.toString(entity) : null;
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: " + status);
-                }
-            }
-        };
-        return responseHandler;
+			@Override
+			public String handleResponse(final HttpResponse myresponse) throws ClientProtocolException, IOException {
+				int status = myresponse.getStatusLine().getStatusCode();
+				if (status >= 200 && status < 300) {
+					HttpEntity entity = myresponse.getEntity();
+					return entity != null ? EntityUtils.toString(entity) : null;
+				} else {
+					throw new ClientProtocolException("Unexpected response status: " + status);
+				}
+			}
+		};
+		return responseHandler;
 	}
 }
