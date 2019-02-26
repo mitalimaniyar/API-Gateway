@@ -38,6 +38,7 @@ public class CustomResponseHandler {
 
 			@Override
 			public String handleResponse(final HttpResponse myresponse) throws ClientProtocolException, IOException {
+
 				Integer status = myresponse.getStatusLine().getStatusCode();
 
 				String uri = request.getRequestURI();
@@ -56,7 +57,6 @@ public class CustomResponseHandler {
 				}
 				if (status >= 200 && status < 300) {
 					HttpEntity entity = myresponse.getEntity();
-
 					return entity != null ? EntityUtils.toString(entity) : null;
 				} else {
 					throw new ClientProtocolException("Unexpected response status: " + status);
