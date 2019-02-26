@@ -32,10 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
-import com.jayway.jsonpath.JsonPath;
-
-import net.minidev.json.JSONValue;
 
 @Service
 public class RequestObjectService {
@@ -156,22 +152,22 @@ public class RequestObjectService {
 		Map<String, String> pathParams = new LinkedHashMap<String, String>();
 		Map<String, String> querystringParams = new LinkedHashMap<String, String>();
 
-		if (!requestParameters.isEmpty()) {
+		if (requestParameters!=null && !requestParameters.isEmpty()) {
 			for (String headerName : requestParameters.keySet()) {
-				String[] recurseCall = headerName.split("\\.");
+				String[] paramGroup = headerName.split("\\.");
 				String value = requestParameters.get(headerName);
 
 				String paramValue = interpretParamValue(request, value, inputRequest);
 
-				switch (recurseCall[2]) {
+				switch (paramGroup[2]) {
 				case "header":
-					headerParams.put(recurseCall[3], paramValue);
+					headerParams.put(paramGroup[3], paramValue);
 					break;
 				case "path":
-					pathParams.put(recurseCall[3], paramValue);
+					pathParams.put(paramGroup[3], paramValue);
 					break;
 				case "querystring":
-					querystringParams.put(recurseCall[3], paramValue);
+					querystringParams.put(paramGroup[3], paramValue);
 					break;
 				}
 			}
