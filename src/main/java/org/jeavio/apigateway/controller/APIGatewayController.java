@@ -17,7 +17,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.jeavio.apigateway.model.InputRequest;
+import org.jeavio.apigateway.model.RequestResponse;
 import org.jeavio.apigateway.model.Swagger;
 import org.jeavio.apigateway.service.RequestObjectService;
 import org.jeavio.apigateway.service.URLMethodService;
@@ -63,7 +63,7 @@ public class APIGatewayController {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
-		InputRequest inputRequest = requestObjectService.getInputObject(allParams, requestBody);
+		RequestResponse inputRequest = requestObjectService.getInputObject(allParams, requestBody);
 
 		HttpUriRequest requestSend = requestObjectService.createRequest(inputRequest, requestBody);
 

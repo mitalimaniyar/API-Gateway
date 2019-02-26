@@ -9,13 +9,17 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.util.EntityUtils;
+import org.jeavio.apigateway.model.RequestResponse;
 import org.jeavio.apigateway.model.IntegrationResponse;
 import org.jeavio.apigateway.model.Swagger;
 import org.jeavio.apigateway.service.IntegrationService;
 import org.jeavio.apigateway.service.URLMethodService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 public class CustomResponseHandler {
@@ -52,6 +56,12 @@ public class CustomResponseHandler {
 					
 					if(!expectedstatus.equals(status.toString()))
 						throw new ClientProtocolException("Unexpected response status: " + status);
+					
+					ObjectMapper objectMapper=new ObjectMapper();
+					HttpEntity entity = myresponse.getEntity();
+					if(entity==null)
+						return null;
+					RequestResponse outputResponse=objectMapper.readValue(EntityUtils.toString(entity).getBytes(),RequestResponse.class);
 					
 					
 				}

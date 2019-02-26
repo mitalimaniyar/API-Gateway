@@ -11,16 +11,16 @@ import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONValue;
 
 @Component
-public class OutputResponse {
+public class RequestResponse {
 
 	private Map<String, Object> properties = new LinkedHashMap<>();
 	
-	@JsonAnySetter
-	public void set(String fieldName,Object value) {
-		this.properties.put(fieldName, value);
-	}
-	
-	public Object path(String reference) {
+    @JsonAnySetter
+    public void set(String fieldName, Object value){
+        this.properties.put(fieldName, value);
+    }
+    
+    public Object path(String reference) {
 		Object patht=JsonPath.read(properties,reference);
 		return patht;
 	}
@@ -43,5 +43,5 @@ public class OutputResponse {
 	public Map<String,Object> params(){
     	return properties;
     }
+	
 }
-

@@ -26,7 +26,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.jeavio.apigateway.model.GatewayIntegration;
-import org.jeavio.apigateway.model.InputRequest;
+import org.jeavio.apigateway.model.RequestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;
@@ -50,14 +50,14 @@ public class RequestObjectService {
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
-	public InputRequest getInputObject(Map<String, String> allParams, String requestBody) {
+	public RequestResponse getInputObject(Map<String, String> allParams, String requestBody) {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 		
-		InputRequest inputRequest = new InputRequest();
+		RequestResponse inputRequest = new RequestResponse();
 		if (requestBody != null && !requestBody.isEmpty()) {
 			try {
-				inputRequest = objectMapper.readValue(requestBody.getBytes(), InputRequest.class);
+				inputRequest = objectMapper.readValue(requestBody.getBytes(), RequestResponse.class);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -78,7 +78,7 @@ public class RequestObjectService {
 		return inputRequest;
 	}
 
-	public String getRequestBody(InputRequest inputRequest, String requestBody) {
+	public String getRequestBody(RequestResponse inputRequest, String requestBody) {
 
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
@@ -137,7 +137,7 @@ public class RequestObjectService {
 		return context1;
 	}
 
-	public HttpUriRequest createRequest(InputRequest inputRequest, String requestBody) {
+	public HttpUriRequest createRequest(RequestResponse inputRequest, String requestBody) {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
@@ -201,7 +201,7 @@ public class RequestObjectService {
 		return targetRequest;
 	}
 
-	private String interpretParamValue(String value, InputRequest inputRequest) {
+	private String interpretParamValue(String value, RequestResponse inputRequest) {
 		String paramValue = null;
 		if (value.indexOf("'") != -1) {
 			paramValue = value.replace("'", "");
