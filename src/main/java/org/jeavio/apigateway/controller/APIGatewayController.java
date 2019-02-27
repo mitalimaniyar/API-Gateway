@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 public class APIGatewayController {
 
@@ -38,13 +37,13 @@ public class APIGatewayController {
 
 	@Autowired
 	Map<String, String> cognitoIdMap;
-	
+
 	@Autowired
 	ResponseObjectService responseObjectService;
 
 	@RequestMapping
 	public String UrlMapper(HttpServletRequest request, @RequestParam Map<String, String> allParams,
-			@RequestBody(required = false) String requestBody,HttpServletResponse response) {
+			@RequestBody(required = false) String requestBody, HttpServletResponse response) {
 
 //		URL Validation
 //		String requestHost=request.getHeader("host");
@@ -55,45 +54,43 @@ public class APIGatewayController {
 //		}
 
 		response.setContentType("application/json");
-		String responseBody=null;
-		
+		String responseBody = null;
+
 		// URL parsing
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
-		RequestResponse inputRequest = requestObjectService.getInputObject(uri,method,allParams, requestBody);
+		RequestResponse inputRequest = requestObjectService.getInputObject(uri, method, allParams, requestBody);
 
-		HttpUriRequest requestSend = requestObjectService.createRequest(request,inputRequest, requestBody);
+		HttpUriRequest requestSend = requestObjectService.createRequest(request, inputRequest, requestBody);
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;
 
 		try {
-            
-            backendResponse = (CloseableHttpResponse) httpclient.execute(requestSend);
-           
+
+			backendResponse = (CloseableHttpResponse) httpclient.execute(requestSend);
+
 		} catch (IOException e1) {
 
 			e1.printStackTrace();
 		}
-		
+
 //      Populate Cognito Id cache
 		if (uri.equals("/api/login")) {
 			cognitoIdMap.put("mytoken", "Demo CogId");
 //      	  cognitoIdMap.put(response.getFirstHeader("sessionToken").getValue(),response.getFirstHeader("identityId").getValue());
 
 		}
-		
-		
+
 		try {
-			responseBody=responseObjectService.getResponseBody(request,backendResponse);
-			
+			responseBody = responseObjectService.getResponseBody(request, backendResponse, response);
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		
 //		response.setStatus(400);
 		return responseBody;
 
