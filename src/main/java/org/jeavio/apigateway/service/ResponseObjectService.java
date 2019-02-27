@@ -43,7 +43,7 @@ public class ResponseObjectService {
 		}
 
 //		Setting Response Headers
-		setResponse(response, backendResponse, integratedResponse);
+		//setResponse(response, backendResponse, integratedResponse);
 
 		HttpEntity entity = backendResponse.getEntity();
 		if (entity == null)
@@ -54,9 +54,7 @@ public class ResponseObjectService {
 		if (integratedResponse.getResponseTemplates() != null)
 			template = integratedResponse.getResponseTemplates().get("application/json");
 		String responseBody = EntityUtils.toString(entity);
-		if (template == null)
-			return null;
-		else if (template.equals("__passthrough__"))
+		if (template == null || template.equals("__passthrough__")) 
 			return responseBody;
 		else {
 			ObjectMapper objectMapper = new ObjectMapper();

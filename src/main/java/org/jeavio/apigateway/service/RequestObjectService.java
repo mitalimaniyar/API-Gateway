@@ -242,12 +242,12 @@ public class RequestObjectService {
 		switch (httpMethod) {
 
 		case "GET":
-			HttpGet httpGet = new HttpGet("http://localhost:9090/home");
+			HttpGet httpGet = new HttpGet(targetUri);
 			return httpGet;
 
 		case "POST":
 //		 		HttpPost httpPost=new HttpPost(targetUri);
-			HttpPost httpPost = new HttpPost("http://localhost:9090/home");
+			HttpPost httpPost = new HttpPost(targetUri);
 			try {
 				entity = new StringEntity(parsedRequestBody);
 			} catch (UnsupportedEncodingException e) {
@@ -257,7 +257,7 @@ public class RequestObjectService {
 			return httpPost;
 
 		case "PUT":
-			HttpPut httpPut = new HttpPut("http://localhost:9090/home");
+			HttpPut httpPut = new HttpPut(targetUri);
 			try {
 				entity = new StringEntity(parsedRequestBody);
 			} catch (UnsupportedEncodingException e) {
@@ -267,7 +267,7 @@ public class RequestObjectService {
 			return httpPut;
 
 		case "PATCH":
-			HttpPatch httpPatch = new HttpPatch("http://localhost:9090/home");
+			HttpPatch httpPatch = new HttpPatch(targetUri);
 			try {
 				entity = new StringEntity(parsedRequestBody);
 			} catch (UnsupportedEncodingException e) {
@@ -277,10 +277,10 @@ public class RequestObjectService {
 			return httpPatch;
 
 		case "DELETE":
-			HttpDelete httpDelete = new HttpDelete("http://localhost:9090/home");
+			HttpDelete httpDelete = new HttpDelete(targetUri);
 			return httpDelete;
 		default:
-			HttpGet httpGet2 = new HttpGet("http://localhost:9090/home");
+			HttpGet httpGet2 = new HttpGet(targetUri);
 			return httpGet2;
 		}
 	}
