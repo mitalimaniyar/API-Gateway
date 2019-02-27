@@ -20,16 +20,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ResponseObjectService {
-	@Autowired
-	HttpServletRequest request;
-
+	
 	@Autowired
 	IntegrationService integrationService;
 
 	@Autowired
 	URLMethodService urlMethodService;
 
-	public String getResponseBody(HttpResponse backedResponse) throws ClientProtocolException, IOException {
+	public String getResponseBody(HttpServletRequest request,HttpResponse backedResponse) throws ClientProtocolException, IOException {
 		Integer status = backedResponse.getStatusLine().getStatusCode();
 
 		String uri = request.getRequestURI();
@@ -41,11 +39,6 @@ public class ResponseObjectService {
 		if (integratedResponse == null) {
 			integratedResponse = integrationService.getIntegrationObject(uri, method).getResponses()
 					.get("default");
-			String expectedstatus = integratedResponse.getStatusCode();
-
-			if (!expectedstatus.equals(status.toString()))
-				throw new ClientProtocolException("Unexpected response status: " + status);
-
 		}
 
 		HttpEntity entity = backedResponse.getEntity();

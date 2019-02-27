@@ -45,14 +45,9 @@ public class RequestObjectService {
 	@Autowired
 	Map<String, String> cognitoIdMap;
 
-	@Autowired
-	HttpServletRequest request;
-
 	ObjectMapper objectMapper = new ObjectMapper();
 
-	public RequestResponse getInputObject(Map<String, String> allParams, String requestBody) {
-		String uri = request.getRequestURI();
-		String method = request.getMethod().toLowerCase();
+	public RequestResponse getInputObject(String uri,String method,Map<String, String> allParams, String requestBody) {
 		
 		RequestResponse inputRequest = new RequestResponse();
 		if (requestBody != null && !requestBody.isEmpty()) {
@@ -78,7 +73,7 @@ public class RequestObjectService {
 		return inputRequest;
 	}
 
-	public String getRequestBody(RequestResponse inputRequest, String requestBody) {
+	public String getRequestBody(HttpServletRequest request,RequestResponse inputRequest, String requestBody) {
 
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
@@ -97,7 +92,7 @@ public class RequestObjectService {
 
 				VelocityContext context = new VelocityContext();
 				if (request.getHeader("x-amz-security-token") != null) {
-					context.put("context", getContextObject());
+					context.put("context", getContextObject(request));
 				}
 
 				context.put("input", inputRequest);
@@ -114,7 +109,7 @@ public class RequestObjectService {
 			return null;
 	}
 
-	public String getCognitoId() {
+	public String getCognitoId(HttpServletRequest request) {
 		String sessionToken = request.getHeader("x-amz-security-token");
 		String cognitoId = null;
 		if (sessionToken != null && cognitoIdMap.containsKey(sessionToken)) {
@@ -123,16 +118,16 @@ public class RequestObjectService {
 		return cognitoId;
 	}
 
-	private Map<String, Map<String, String>> getContextObject() {
+	private Map<String, Map<String, String>> getContextObject(HttpServletRequest request) {
 		Map<String, Map<String, String>> context1 = new LinkedHashMap<String, Map<String, String>>();
 		Map<String, String> identity = new LinkedHashMap<String, String>();
-		identity.put("cognitoIdentityId", getCognitoId());
+		identity.put("cognitoIdentityId", getCognitoId(request));
 		context1.put("identity", identity);
 
 		return context1;
 	}
 
-	public HttpUriRequest createRequest(RequestResponse inputRequest, String requestBody) {
+	public HttpUriRequest createRequest(HttpServletRequest request,RequestResponse inputRequest, String requestBody) {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
@@ -150,7 +145,7 @@ public class RequestObjectService {
 				String[] paramGroup = headerName.split("\\.");
 				String value = requestParameters.get(headerName);
 
-				String paramValue = interpretParamValue(value, inputRequest);
+				String paramValue = interpretParamValue(request,value, inputRequest);
 
 				switch (paramGroup[2]) {
 				case "header":
@@ -167,7 +162,7 @@ public class RequestObjectService {
 		}
 
 //		Creating Request Body
-		String parsedRequestBody = getRequestBody(inputRequest, requestBody);
+		String parsedRequestBody = getRequestBody(request,inputRequest, requestBody);
 
 //		Creating Url including Queryparams
 		URI targetUri = getTargetUri(integrationObject, pathParams, querystringParams);
@@ -188,12 +183,12 @@ public class RequestObjectService {
 		return targetRequest;
 	}
 
-	private String interpretParamValue(String value, RequestResponse inputRequest) {
+	private String interpretParamValue(HttpServletRequest request,String value, RequestResponse inputRequest) {
 		String paramValue = null;
 		if (value.indexOf("'") != -1) {
 			paramValue = value.replace("'", "");
 		} else if (value.equals("context.identity.cognitoIdentityId")) {
-			paramValue = getCognitoId();
+			paramValue = getCognitoId(request);
 		} else {
 			String paramName = value.substring(value.lastIndexOf(".") + 1);
 			paramValue = (String) inputRequest.params().get(paramName);

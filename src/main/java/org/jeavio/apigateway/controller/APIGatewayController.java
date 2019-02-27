@@ -61,9 +61,9 @@ public class APIGatewayController {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
-		RequestResponse inputRequest = requestObjectService.getInputObject(allParams, requestBody);
+		RequestResponse inputRequest = requestObjectService.getInputObject(uri,method,allParams, requestBody);
 
-		HttpUriRequest requestSend = requestObjectService.createRequest(inputRequest, requestBody);
+		HttpUriRequest requestSend = requestObjectService.createRequest(request,inputRequest, requestBody);
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;
@@ -86,7 +86,7 @@ public class APIGatewayController {
 		
 		
 		try {
-			responseBody=responseObjectService.getResponseBody(backendResponse);
+			responseBody=responseObjectService.getResponseBody(request,backendResponse);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
