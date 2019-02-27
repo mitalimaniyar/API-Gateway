@@ -91,7 +91,6 @@ public class APIGatewayController {
 			e.printStackTrace();
 		}
 
-//		response.setStatus(400);
 		return responseBody;
 
 	}
