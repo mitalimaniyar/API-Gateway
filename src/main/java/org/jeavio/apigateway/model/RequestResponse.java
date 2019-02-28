@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.jayway.jsonpath.JsonPath;
 
 import net.minidev.json.JSONValue;
@@ -16,24 +14,10 @@ public class RequestResponse {
 
 	private Map<String, Object> properties = new LinkedHashMap<>();
 	
-	
-    @JsonAnySetter
-    public void set(String fieldName, Object value){
-        this.properties.put(fieldName, value);
-    }
-    
     public Object path(String reference) {
 		Object patht=JsonPath.read(properties,reference);
 		return patht;
 	}
-    
-    @JsonAnyGetter
-    public Object get(String key) {
-    	if(properties.containsKey(key))
-    		return properties.get(key);
-    	else
-    		return "";
-    }
     
     public Object params(String key) {
     	if(properties.containsKey(key))

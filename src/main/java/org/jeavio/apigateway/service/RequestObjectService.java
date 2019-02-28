@@ -50,13 +50,7 @@ public class RequestObjectService {
 		
 		RequestResponse inputRequest = new RequestResponse();
 		if (requestBody != null && !requestBody.isEmpty()) {
-//			try {
-//				inputRequest = objectMapper.readValue(requestBody, RequestResponse.class);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-			inputRequest.putBody(requestBody);
+				inputRequest.putBody(requestBody);
 		}
 
 		UriTemplate temp = null;

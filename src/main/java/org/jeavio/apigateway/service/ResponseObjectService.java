@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,6 +16,7 @@ import org.jeavio.apigateway.model.IntegrationResponse;
 import org.jeavio.apigateway.model.RequestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,8 +30,7 @@ public class ResponseObjectService {
 	@Autowired
 	URLMethodService urlMethodService;
 
-	public String getResponseBody(HttpServletRequest request, HttpResponse backendResponse,
-			HttpServletResponse response) throws ClientProtocolException, IOException {
+	public String getResponseBody(HttpServletRequest request, HttpResponse backendResponse) throws ClientProtocolException, IOException {
 		Integer status = backendResponse.getStatusLine().getStatusCode();
 
 		String uri = request.getRequestURI();
@@ -58,9 +57,10 @@ public class ResponseObjectService {
 			return responseBody;
 	}
 		else {
-			ObjectMapper objectMapper = new ObjectMapper();
-			RequestResponse outputResponse = objectMapper.readValue(responseBody, RequestResponse.class);
-
+			
+			RequestResponse outputResponse = new RequestResponse();
+			outputResponse.putBody(responseBody);
+			
 			VelocityEngine velocityEngine = new VelocityEngine();
 			VelocityContext context = new VelocityContext();
 
@@ -74,7 +74,7 @@ public class ResponseObjectService {
 		}
 	}
 
-	public HttpHeaders setResponseHeaders(String uri,String method,HttpResponse backendResponse) {
+	public HttpHeaders getResponseHeaders(String uri,String method,HttpResponse backendResponse) {
 			
 		Integer status = backendResponse.getStatusLine().getStatusCode();
 		
@@ -85,7 +85,7 @@ public class ResponseObjectService {
 		}
 
 		HttpHeaders headers=new HttpHeaders();
-		 
+		headers.setContentType(MediaType.APPLICATION_JSON);
 	
 		Map<String, String> responseParameters = integratedResponse.getResponseParameters();
 		String paramName,paramValue,value ;
@@ -101,13 +101,23 @@ public class ResponseObjectService {
 				else
 					paramValue = new String("Not found");
 			}
-			
-			headers.add(paramName, paramValue);
+			if(!paramName.equals("Access-Control-Allow-Origin"))
+				headers.add(paramName, paramValue);
 		}
 		return headers;
 		
 	}
 	
-	
+	public int getResponseStatus(String uri,String method,HttpResponse backendResponse) {
+		Integer status = backendResponse.getStatusLine().getStatusCode();
+		
+		IntegrationResponse integratedResponse;
+		integratedResponse = integrationService.getIntegrationObject(uri, method).getResponses().get(status.toString());
+		if (integratedResponse == null) {
+			integratedResponse = integrationService.getIntegrationObject(uri, method).getResponses().get("default");
+		}
+		
+		return Integer.parseInt(integratedResponse.getStatusCode());
+	}
 
 }

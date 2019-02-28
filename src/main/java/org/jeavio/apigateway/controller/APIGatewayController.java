@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class APIGatewayController {
 
 	@Autowired
@@ -51,23 +53,8 @@ public class APIGatewayController {
 	ResponseObjectService responseObjectService;
 
 
-//	@RequestMapping(produces = { "application/json" }, method = RequestMethod.OPTIONS)
-//	@CrossOrigin(origins = "http://localhost:3000")
-//	public ResponseEntity<String> UrlOptions(HttpServletRequest request) {
-//
-//		// URL parsing
-//		String uri = request.getRequestURI();
-//		String method = request.getMethod().toLowerCase();
-//		
-//		HttpHeaders headers=responseObjectService.setResponseHeaders(uri,method,null);
-//		
-//		return ResponseEntity.status(HttpStatus.OK).headers(headers).body(null);
-//		
-//	}
-
 	@RequestMapping(produces = { "application/json" })
-	@CrossOrigin(origins = "http://localhost:3000")
-	public ResponseEntity<Object> UrlMapper(HttpServletRequest request, @RequestParam Map<String, String> allParams,
+	public ResponseEntity<Object> UrlMapper(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> allParams,
 			@RequestBody(required = false) String requestBody) {
 
 
@@ -84,12 +71,14 @@ public class APIGatewayController {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;
 		HttpHeaders headers=null;
+		int responseStatus=200;
 
 		try {
 
 			backendResponse = (CloseableHttpResponse) httpclient.execute(requestSend);
-			responseBody = responseObjectService.getResponseBody(request, backendResponse, null);
-			headers=responseObjectService.setResponseHeaders(uri,method,backendResponse);
+			responseBody = responseObjectService.getResponseBody(request, backendResponse);
+			headers=responseObjectService.getResponseHeaders(uri,method,backendResponse);
+			responseStatus=responseObjectService.getResponseStatus(uri,method,backendResponse);
 
 		} catch (IOException e1) {
 
@@ -134,9 +123,9 @@ public class APIGatewayController {
 			}
 
 		}
-		int responseStatus=backendResponse.getStatusLine().getStatusCode();
 		
-		return ResponseEntity.status(responseStatus).body(responseBody);
+		ResponseEntity<Object> res = ResponseEntity.status(responseStatus).headers(headers).body(responseBody);
+		return res;
 
 	}
 }
