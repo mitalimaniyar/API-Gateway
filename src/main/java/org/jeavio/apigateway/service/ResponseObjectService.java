@@ -16,6 +16,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.jeavio.apigateway.model.IntegrationResponse;
 import org.jeavio.apigateway.model.RequestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +44,7 @@ public class ResponseObjectService {
 		}
 
 //		Setting Response Headers
-		setResponse(response, backendResponse, integratedResponse);
+//		setResponse(response, backendResponse, integratedResponse);
 
 		HttpEntity entity = backendResponse.getEntity();
 		if (entity == null)
@@ -54,13 +55,12 @@ public class ResponseObjectService {
 		if (integratedResponse.getResponseTemplates() != null)
 			template = integratedResponse.getResponseTemplates().get("application/json");
 		String responseBody = EntityUtils.toString(entity);
-		if (template == null)
-			return null;
-		else if (template.equals("__passthrough__"))
+		if (template == null || template.equals("__passthrough__")) {
 			return responseBody;
+	}
 		else {
 			ObjectMapper objectMapper = new ObjectMapper();
-			RequestResponse outputResponse = objectMapper.readValue(responseBody.getBytes(), RequestResponse.class);
+			RequestResponse outputResponse = objectMapper.readValue(responseBody, RequestResponse.class);
 
 			VelocityEngine velocityEngine = new VelocityEngine();
 			VelocityContext context = new VelocityContext();
@@ -75,12 +75,19 @@ public class ResponseObjectService {
 		}
 	}
 
-	private void setResponse(HttpServletResponse response, HttpResponse backendResponse,
-			IntegrationResponse integratedResponse) {
+	public HttpHeaders setResponseHeaders(String uri,String method,HttpResponse backendResponse) {
 			
-		int status = Integer.parseInt(integratedResponse.getStatusCode());
-		response.setStatus(status);
+		Integer status = backendResponse.getStatusLine().getStatusCode();
 		
+		IntegrationResponse integratedResponse;
+		integratedResponse = integrationService.getIntegrationObject(uri, method).getResponses().get(status.toString());
+		if (integratedResponse == null) {
+			integratedResponse = integrationService.getIntegrationObject(uri, method).getResponses().get("default");
+		}
+
+		HttpHeaders headers=new HttpHeaders();
+		 
+	
 		Map<String, String> responseParameters = integratedResponse.getResponseParameters();
 		String paramName,paramValue,value ;
 		for(String responseParameter : responseParameters.keySet()) {
@@ -96,9 +103,12 @@ public class ResponseObjectService {
 					paramValue = new String("Not found");
 			}
 			
-			response.addHeader(paramName, paramValue);
+			headers.add(paramName, paramValue);
 		}
+		return headers;
 		
 	}
+	
+	
 
 }
