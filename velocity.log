@@ -1,0 +1,8 @@
+2019-02-28 19:37:04,060 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2019-02-28 19:37:04,062 - Created '20' parsers.
+2019-02-28 19:37:04,062 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2019-02-28 19:37:04,062 - Velocimacro : Default library not found.
+2019-02-28 19:37:04,062 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2019-02-28 19:37:04,062 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2019-02-28 19:37:04,063 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2019-02-28 19:37:04,063 - Velocimacro : autoload off : VM system will not automatically reload global library macros

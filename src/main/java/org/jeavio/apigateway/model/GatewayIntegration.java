@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Component
 public class GatewayIntegration {
-	
 
 	private String credentials;
 	private Map<String, IntegrationResponse> responses = new LinkedHashMap<String, IntegrationResponse>();
@@ -24,8 +23,6 @@ public class GatewayIntegration {
 	private String cacheNamespace;
 	private List<String> cacheKeyParameters = new ArrayList<String>();
 	private String type;
-	
-
 
 	public String getCredentials() {
 		return credentials;

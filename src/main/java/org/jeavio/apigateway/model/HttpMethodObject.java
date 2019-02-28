@@ -1,6 +1,5 @@
 package org.jeavio.apigateway.model;
 
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Component
 public class HttpMethodObject {
 
@@ -21,7 +20,7 @@ public class HttpMethodObject {
 	private Map<String, Response> responses;
 	private GatewayAuth apigatewayAuth;
 	private GatewayIntegration apigatewayIntegration;
-	private Map<String,Object> extraTuples=new LinkedHashMap<String, Object>();
+	private Map<String, Object> extraTuples = new LinkedHashMap<String, Object>();
 
 	public List<Parameter> getParameters() {
 		return parameters;
@@ -30,7 +29,6 @@ public class HttpMethodObject {
 	public void setParameters(List<Parameter> parameters) {
 		this.parameters = parameters;
 	}
-
 
 	public Map<String, Response> getResponses() {
 		return responses;
@@ -59,24 +57,17 @@ public class HttpMethodObject {
 	public void setApigatewayIntegration(GatewayIntegration apigatewayIntegration) {
 		this.apigatewayIntegration = apigatewayIntegration;
 	}
-	
+
 	@JsonAnySetter
-	public void set(String key,Object value) {
+	public void set(String key, Object value) {
 
 		this.extraTuples.put(key, value);
 	}
-		
+
 	@JsonAnyGetter
-	public Map<String,Object> get() {
+	public Map<String, Object> get() {
 
 		return extraTuples;
-	}
-
-	@Override
-	public String toString() {
-
-		return "HttpMethodService [parameters=" + parameters + ", responses=" + responses + ", apigatewayAuth="
-				+ apigatewayAuth + ", apigatewayIntegration=" + apigatewayIntegration + "]";
 	}
 
 }

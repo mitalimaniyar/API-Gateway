@@ -14,12 +14,12 @@ public class SwaggerService {
 
 	@Autowired
 	ObjectMapper objectMapper;
-	
+
 	public Swagger parse(String swaggerPath) {
-		Swagger swagger=new Swagger();
+		Swagger swagger = new Swagger();
 		try {
 
-			swagger= objectMapper.readValue(new File(swaggerPath),Swagger.class);
+			swagger = objectMapper.readValue(new File(swaggerPath), Swagger.class);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -27,5 +27,5 @@ public class SwaggerService {
 		}
 		return swagger;
 	}
-	
+
 }

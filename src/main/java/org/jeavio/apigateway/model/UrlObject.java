@@ -9,49 +9,49 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Component
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UrlObject {
-	
+
 	private Map<String, HttpMethodObject> httpMethodServiceMap = new LinkedHashMap<String, HttpMethodObject>();
 	private List<Parameter> parameters;
-	
+
 	public void setGet(HttpMethodObject object) {
-		httpMethodServiceMap.put("get",object);
+		httpMethodServiceMap.put("get", object);
 	}
-	
+
 	public void setPost(HttpMethodObject object) {
-		httpMethodServiceMap.put("post",object);
+		httpMethodServiceMap.put("post", object);
 	}
-	
+
 	public void setPut(HttpMethodObject object) {
-		httpMethodServiceMap.put("put",object);
+		httpMethodServiceMap.put("put", object);
 	}
-	
+
 	public void setPatch(HttpMethodObject object) {
-		httpMethodServiceMap.put("patch",object);
+		httpMethodServiceMap.put("patch", object);
 	}
-	
+
 	public void setDelete(HttpMethodObject object) {
-		httpMethodServiceMap.put("delete",object);
+		httpMethodServiceMap.put("delete", object);
 	}
-	
+
 	public void setHead(HttpMethodObject object) {
-		httpMethodServiceMap.put("head",object);
+		httpMethodServiceMap.put("head", object);
 	}
-	
+
 	public void setOptions(HttpMethodObject object) {
-		httpMethodServiceMap.put("options",object);
+		httpMethodServiceMap.put("options", object);
 	}
-	
+
 	public void setTrace(HttpMethodObject object) {
-		httpMethodServiceMap.put("trace",object);
+		httpMethodServiceMap.put("trace", object);
 	}
-	
+
 	public HttpMethodObject get(String method) {
 		return httpMethodServiceMap.get(method);
 	}
-	
-	public Map<String, HttpMethodObject> get(){
+
+	public Map<String, HttpMethodObject> get() {
 		return httpMethodServiceMap;
 	}
 

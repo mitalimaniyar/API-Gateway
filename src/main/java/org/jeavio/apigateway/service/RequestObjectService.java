@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
@@ -28,11 +27,11 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.jeavio.apigateway.model.GatewayIntegration;
 import org.jeavio.apigateway.model.RequestResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class RequestObjectService {
@@ -46,59 +45,70 @@ public class RequestObjectService {
 	@Autowired
 	DualHashBidiMap cognitoIdMap;
 
-	ObjectMapper objectMapper = new ObjectMapper();
+	public static Logger APIGatewayLogger = LoggerFactory.getLogger(RequestObjectService.class);
 
-	public RequestResponse getInputObject(String uri,String method,Map<String, String> allParams, String requestBody) {
-		
+	public RequestResponse getInputObject(String uri, String method, Map<String, String> allParams,
+			String requestBody) {
+
 		RequestResponse inputRequest = new RequestResponse();
 		if (requestBody != null && !requestBody.isEmpty()) {
-				inputRequest.putBody(requestBody);
+			inputRequest.putBody(requestBody);
 		}
 
 		UriTemplate temp = null;
 		try {
 			temp = urlMethodService.getUriTemp(uri, method);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		inputRequest.putAll(temp.match(uri));
 		inputRequest.putAll(allParams);
 
+		APIGatewayLogger.debug(method + " " + uri + " " + " \n$input object for template : " + inputRequest);
+
 		return inputRequest;
 	}
 
-	public String getRequestBody(HttpServletRequest request,RequestResponse inputRequest, String requestBody) {
+	public String getRequestBody(HttpServletRequest request, RequestResponse inputRequest, String requestBody) {
 
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
-		
+		APIGatewayLogger.debug(method + " " + uri + " " + " Generating RequestBody");
+
 		VelocityEngine velocityEngine = new VelocityEngine();
-		
+
 		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uri, method);
 
 //		Template requestTemplate;
 		if (integrationObject.getRequestTemplates() != null
 				&& integrationObject.getRequestTemplates().get("application/json") != null) {
 			if (integrationObject.getRequestTemplates().get("application/json").equals("__passthrough__")) {
+				APIGatewayLogger.debug(method + " " + uri + " " + " \"__passthrough__\" found");
+				APIGatewayLogger.debug("Sending requestBody :  " + requestBody);
 				return requestBody;
 			} else {
 
 				VelocityContext context = new VelocityContext();
 				if (request.getHeader("x-amz-security-token") != null) {
+
 					context.put("context", getContextObject(request));
 				}
 
 				context.put("input", inputRequest);
 				StringWriter writer = new StringWriter();
 				String template = integrationObject.getRequestTemplates().get("application/json");
-				
-				if (velocityEngine.evaluate(context, writer, "requestTemplate", template))
+
+				if (velocityEngine.evaluate(context, writer, "requestTemplate", template)) {
+					APIGatewayLogger.debug(method + " " + uri + " " + " Template found and successfully merged ");
+					APIGatewayLogger.debug("RequestBody  :  " + writer.toString());
 					return writer.toString();
-				else
+				} else {
+					APIGatewayLogger
+							.debug(method + " " + uri + " " + " Template found and merge failed..returning null");
 					return null;
+				}
 			}
 
 		} else
@@ -109,6 +119,9 @@ public class RequestObjectService {
 		String sessionToken = request.getHeader("x-amz-security-token");
 		String cognitoId = null;
 		if (sessionToken != null && cognitoIdMap.containsKey(sessionToken)) {
+
+			APIGatewayLogger.debug(request.getMethod() + " " + request.getRequestURI() + " " + "CogId : " + cognitoId
+					+ " sessionToken : " + sessionToken);
 			cognitoId = (String) cognitoIdMap.get(sessionToken);
 		}
 		return cognitoId;
@@ -123,63 +136,7 @@ public class RequestObjectService {
 		return context1;
 	}
 
-	public HttpUriRequest createRequest(HttpServletRequest request,RequestResponse inputRequest, String requestBody) {
-		String uri = request.getRequestURI();
-		String method = request.getMethod().toLowerCase();
-
-		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uri, method);
-
-//		Setting Parameters
-		Map<String, String> requestParameters = integrationObject.getRequestParameters();
-
-		Map<String, String> headerParams = new LinkedHashMap<String, String>();
-		Map<String, String> pathParams = new LinkedHashMap<String, String>();
-		Map<String, String> querystringParams = new LinkedHashMap<String, String>();
-
-		if (requestParameters != null && !requestParameters.isEmpty()) {
-			for (String headerName : requestParameters.keySet()) {
-				String[] paramGroup = headerName.split("\\.");
-				String value = requestParameters.get(headerName);
-
-				String paramValue = interpretParamValue(request,value, inputRequest);
-
-				switch (paramGroup[2]) {
-				case "header":
-					headerParams.put(paramGroup[3], paramValue);
-					break;
-				case "path":
-					pathParams.put(paramGroup[3], paramValue);
-					break;
-				case "querystring":
-					querystringParams.put(paramGroup[3], paramValue);
-					break;
-				}
-			}
-		}
-
-//		Creating Request Body
-		String parsedRequestBody = getRequestBody(request,inputRequest, requestBody);
-
-//		Creating Url including Queryparams
-		URI targetUri = getTargetUri(integrationObject, pathParams, querystringParams);
-
-//		Creating Request
-		HttpUriRequest targetRequest = getRequiredRequest(targetUri, integrationObject.getHttpMethod(),
-				parsedRequestBody);
-		if (!headerParams.isEmpty()) {
-			for (String param : headerParams.keySet()) {
-				targetRequest.addHeader(param, headerParams.get(param));
-			}
-		}
-		targetRequest.setHeader("Accept", "application/json");
-		targetRequest.setHeader("Content-type", "application/json");
-		if (request.getHeader("referer") != null)
-			targetRequest.setHeader("referer", request.getHeader("referer"));
-
-		return targetRequest;
-	}
-
-	private String interpretParamValue(HttpServletRequest request,String value, RequestResponse inputRequest) {
+	private String interpretParamValue(HttpServletRequest request, String value, RequestResponse inputRequest) {
 		String paramValue = null;
 		if (value.indexOf("'") != -1) {
 			paramValue = value.replace("'", "");
@@ -279,6 +236,71 @@ public class RequestObjectService {
 			HttpGet httpGet2 = new HttpGet(targetUri);
 			return httpGet2;
 		}
+	}
+
+	public HttpUriRequest createRequest(HttpServletRequest request, RequestResponse inputRequest, String requestBody) {
+
+		String uri = request.getRequestURI();
+		String method = request.getMethod().toLowerCase();
+
+		APIGatewayLogger.debug(method + " " + uri + " " + "Creating Request for Backend Started");
+
+		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uri, method);
+
+//		Setting Parameters
+		Map<String, String> requestParameters = integrationObject.getRequestParameters();
+
+		Map<String, String> headerParams = new LinkedHashMap<String, String>();
+		Map<String, String> pathParams = new LinkedHashMap<String, String>();
+		Map<String, String> querystringParams = new LinkedHashMap<String, String>();
+
+		if (requestParameters != null && !requestParameters.isEmpty()) {
+			for (String headerName : requestParameters.keySet()) {
+				String[] paramGroup = headerName.split("\\.");
+				String value = requestParameters.get(headerName);
+
+				String paramValue = interpretParamValue(request, value, inputRequest);
+
+				switch (paramGroup[2]) {
+				case "header":
+					headerParams.put(paramGroup[3], paramValue);
+					break;
+				case "path":
+					pathParams.put(paramGroup[3], paramValue);
+					break;
+				case "querystring":
+					querystringParams.put(paramGroup[3], paramValue);
+					break;
+				}
+			}
+		}
+		APIGatewayLogger.debug(method + " " + uri + " " + "Request Header Params : " + headerParams);
+		APIGatewayLogger.debug(method + " " + uri + " " + "Request Path Params : " + pathParams);
+		APIGatewayLogger.debug(method + " " + uri + " " + "Request QueryString Params : " + querystringParams);
+
+//		Creating Request Body
+		String parsedRequestBody = getRequestBody(request, inputRequest, requestBody);
+
+//		Creating Url including Queryparams
+		URI targetUri = getTargetUri(integrationObject, pathParams, querystringParams);
+		APIGatewayLogger.debug(method + " " + uri + " " + "Backend URI : " + targetUri + " Backend Method : "
+				+ integrationObject.getHttpMethod());
+
+//		Creating Request
+		HttpUriRequest targetRequest = getRequiredRequest(targetUri, integrationObject.getHttpMethod(),
+				parsedRequestBody);
+		if (!headerParams.isEmpty()) {
+			for (String param : headerParams.keySet()) {
+				targetRequest.addHeader(param, headerParams.get(param));
+			}
+		}
+
+		targetRequest.setHeader("Accept", "application/json");
+		targetRequest.setHeader("Content-type", "application/json");
+		if (request.getHeader("referer") != null)
+			targetRequest.setHeader("referer", request.getHeader("referer"));
+
+		return targetRequest;
 	}
 
 }

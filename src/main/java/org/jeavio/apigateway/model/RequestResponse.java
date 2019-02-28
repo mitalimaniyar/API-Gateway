@@ -13,37 +13,38 @@ import net.minidev.json.JSONValue;
 public class RequestResponse {
 
 	private Map<String, Object> properties = new LinkedHashMap<>();
-	
-    public Object path(String reference) {
-		Object patht=JsonPath.read(properties,reference);
+
+//	Method for $input in VTL
+	public Object path(String reference) {
+		Object patht = JsonPath.read(properties, reference);
 		return patht;
 	}
-    
-    public Object params(String key) {
-    	if(properties.containsKey(key))
-    		return properties.get(key);
-    	else
-    		return "";
-    }
-    
-    public void putAll(Map<String, String> map) {
-    	properties.putAll(map);
-    }
-    
-    
+
 	public String json(String reference) {
-    	Object patht=JsonPath.read(properties,reference);
-    	String content =JSONValue.toJSONString(patht);
-    	content=content.replace("\"","\\\"" );
+		Object patht = JsonPath.read(properties, reference);
+		String content = JSONValue.toJSONString(patht);
+		content = content.replace("\"", "\\\"");
 		return content;
-    }
-    
-	public Map<String,Object> params(){
-    	return properties;
-    }
-	
+	}
+
+	public Object params(String key) {
+		if (properties.containsKey(key))
+			return properties.get(key);
+		else
+			return "";
+	}
+
+	public Map<String, Object> params() {
+		return properties;
+	}
+
+//	Method for setting $input
+	public void putAll(Map<String, String> map) {
+		properties.putAll(map);
+	}
+
 	public void putBody(String Body) {
 		properties.putAll(JsonPath.parse(Body).read("$"));
 	}
-	
+
 }

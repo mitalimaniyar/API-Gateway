@@ -12,16 +12,16 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.jeavio.apigateway.model.IntegrationResponse;
 import org.jeavio.apigateway.model.RequestResponse;
 import org.jeavio.apigateway.model.Swagger;
 import org.jeavio.apigateway.service.IntegrationService;
 import org.jeavio.apigateway.service.RequestObjectService;
 import org.jeavio.apigateway.service.ResponseObjectService;
-import org.jeavio.apigateway.service.URLMethodService;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
@@ -52,32 +52,36 @@ public class APIGatewayController {
 
 	@Autowired
 	ResponseObjectService responseObjectService;
+	
+	public static Logger APIGatewayLogger = LoggerFactory.getLogger(APIGatewayController.class);
 
 
 	@RequestMapping(produces = { "application/json" })
 	public ResponseEntity<Object> UrlMapper(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> allParams,
 			@RequestBody(required = false) String requestBody) {
 
-
-		String responseBody = null;
-
 		// URL parsing
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
+		
+		APIGatewayLogger.debug("Request from Frontend : "+ method+" "+uri);
 
 		RequestResponse inputRequest = requestObjectService.getInputObject(uri, method, allParams, requestBody);
+		
 
 		HttpUriRequest requestSend = requestObjectService.createRequest(request, inputRequest, requestBody);
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;
+		String responseBody = null;
 		HttpHeaders headers=null;
 		int responseStatus=200;
 
 		try {
 
 			backendResponse = (CloseableHttpResponse) httpclient.execute(requestSend);
-			responseBody = responseObjectService.getResponseBody(request, backendResponse);
+			APIGatewayLogger.debug(method+" "+uri+" "+"Request send to backend and Response obtained");
+			responseBody = responseObjectService.getResponseBody(uri,method, backendResponse);
 			headers=responseObjectService.getResponseHeaders(uri,method,backendResponse);
 			responseStatus=responseObjectService.getResponseStatus(uri,method,backendResponse);
 
@@ -94,8 +98,12 @@ public class APIGatewayController {
 
 				JSONParser parser = new JSONParser();
 				JSONObject credentials = (JSONObject) ((JSONObject) parser.parse(responseBody)).get("credentials");
-
-				cognitoIdMap.put((String) credentials.get("sessionToken"), (String) credentials.get("identityId"));
+				
+				String sessionToken=(String) credentials.get("sessionToken");
+				String cogId=(String) credentials.get("identityId");
+				cognitoIdMap.put(sessionToken,cogId);
+				
+				APIGatewayLogger.debug(method+" "+uri+" "+"On Login Request manipulating CogIdMap for cogId : "+cogId);
 
 			} catch (ParseException e1) {
 				// TODO Auto-generated catch block
@@ -113,7 +121,11 @@ public class APIGatewayController {
 				JSONParser parser = new JSONParser();
 				JSONObject credentials = (JSONObject) ((JSONObject) parser.parse(responseBody));
 
-				cognitoIdMap.put((String) credentials.get("sessionToken"), (String) credentials.get("identityId"));
+				String sessionToken=(String) credentials.get("sessionToken");
+				String cogId=(String) credentials.get("identityId");
+				cognitoIdMap.put(sessionToken,cogId);
+				
+				APIGatewayLogger.debug(method+" "+uri+" "+"Refreshing Credentials : Generating new sessionToken for cogId :  "+cogId);
 
 			} catch (ParseException e1) {
 				// TODO Auto-generated catch block
@@ -126,6 +138,8 @@ public class APIGatewayController {
 		}
 		
 		ResponseEntity<Object> res = ResponseEntity.status(responseStatus).headers(headers).body(responseBody);
+		
+		APIGatewayLogger.debug(method+" "+uri+" "+"Sending request to frontend ");
 		return res;
 
 	}
