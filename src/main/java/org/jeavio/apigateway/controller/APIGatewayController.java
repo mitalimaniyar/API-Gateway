@@ -59,7 +59,7 @@ public class APIGatewayController {
 //		// URL parsing
 //		String uri = request.getRequestURI();
 //		String method = request.getMethod().toLowerCase();
-//		
+//		 
 //		HttpHeaders headers=responseObjectService.setResponseHeaders(uri,method,null);
 //		
 //		return ResponseEntity.status(HttpStatus.OK).headers(headers).body(null);
