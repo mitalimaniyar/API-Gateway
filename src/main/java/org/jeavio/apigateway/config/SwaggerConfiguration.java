@@ -16,7 +16,7 @@ public class SwaggerConfiguration {
 	@Bean
 	public Swagger getSwagger() {
 
-		Swagger swagger = swaggerService.parse("/home/jeavio64/Downloads/swagger-update-qa.json");
+		Swagger swagger = swaggerService.parse("/home/jeavio62/Downloads/swagger-update-qa.json");
 
 		return swagger;
 	}	

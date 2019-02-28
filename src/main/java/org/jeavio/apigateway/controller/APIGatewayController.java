@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -47,7 +48,7 @@ public class APIGatewayController {
 	RequestObjectService requestObjectService;
 
 	@Autowired
-	Map<String, String> cognitoIdMap;
+	DualHashBidiMap cognitoIdMap;
 
 	@Autowired
 	ResponseObjectService responseObjectService;
