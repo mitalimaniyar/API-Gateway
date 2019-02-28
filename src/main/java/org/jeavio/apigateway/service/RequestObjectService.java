@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.BidiMap;
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -42,7 +44,7 @@ public class RequestObjectService {
 	IntegrationService integrationService;
 
 	@Autowired
-	Map<String, String> cognitoIdMap;
+	DualHashBidiMap cognitoIdMap;
 
 	ObjectMapper objectMapper = new ObjectMapper();
 
@@ -113,7 +115,7 @@ public class RequestObjectService {
 		String sessionToken = request.getHeader("x-amz-security-token");
 		String cognitoId = null;
 		if (sessionToken != null && cognitoIdMap.containsKey(sessionToken)) {
-			cognitoId = cognitoIdMap.get(sessionToken);
+			cognitoId = (String) cognitoIdMap.get(sessionToken);
 		}
 		return cognitoId;
 	}
