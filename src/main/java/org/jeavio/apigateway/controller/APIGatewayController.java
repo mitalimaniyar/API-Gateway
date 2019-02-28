@@ -1,11 +1,9 @@
 package org.jeavio.apigateway.controller;
 
 import java.io.IOException;
-
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -19,17 +17,18 @@ import org.jeavio.apigateway.service.IntegrationService;
 import org.jeavio.apigateway.service.RequestObjectService;
 import org.jeavio.apigateway.service.ResponseObjectService;
 import org.jeavio.apigateway.service.URLMethodService;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
+
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,6 +50,7 @@ public class APIGatewayController {
 	@Autowired
 	ResponseObjectService responseObjectService;
 
+
 //	@RequestMapping(produces = { "application/json" }, method = RequestMethod.OPTIONS)
 //	@CrossOrigin(origins = "http://localhost:3000")
 //	public ResponseEntity<String> UrlOptions(HttpServletRequest request) {
@@ -69,6 +69,7 @@ public class APIGatewayController {
 	@CrossOrigin(origins = "http://localhost:3000")
 	public ResponseEntity<Object> UrlMapper(HttpServletRequest request, @RequestParam Map<String, String> allParams,
 			@RequestBody(required = false) String requestBody) {
+
 
 		String responseBody = null;
 
@@ -100,6 +101,7 @@ public class APIGatewayController {
 
 			try {
 
+
 				JSONParser parser = new JSONParser();
 				JSONObject credentials = (JSONObject) ((JSONObject) parser.parse(responseBody)).get("credentials");
 
@@ -112,7 +114,6 @@ public class APIGatewayController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
 
 		if (uri.equals("/api/refreshCredentials")) {
@@ -135,9 +136,7 @@ public class APIGatewayController {
 		}
 		int responseStatus=backendResponse.getStatusLine().getStatusCode();
 		
-		
 		return ResponseEntity.status(responseStatus).body(responseBody);
 
 	}
-
 }

@@ -43,9 +43,6 @@ public class ResponseObjectService {
 			integratedResponse = integrationService.getIntegrationObject(uri, method).getResponses().get("default");
 		}
 
-//		Setting Response Headers
-//		setResponse(response, backendResponse, integratedResponse);
-
 		HttpEntity entity = backendResponse.getEntity();
 		if (entity == null)
 			return null;
@@ -55,7 +52,9 @@ public class ResponseObjectService {
 		if (integratedResponse.getResponseTemplates() != null)
 			template = integratedResponse.getResponseTemplates().get("application/json");
 		String responseBody = EntityUtils.toString(entity);
+
 		if (template == null || template.equals("__passthrough__")) {
+
 			return responseBody;
 	}
 		else {
