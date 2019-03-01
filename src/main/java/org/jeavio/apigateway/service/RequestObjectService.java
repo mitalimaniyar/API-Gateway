@@ -25,6 +25,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.app.event.EventCartridge;
+import org.jeavio.apigateway.EventHandler.VTLInvalidReferenceEventHandler;
 import org.jeavio.apigateway.model.GatewayIntegration;
 import org.jeavio.apigateway.model.RequestResponse;
 import org.slf4j.Logger;
@@ -45,7 +47,7 @@ public class RequestObjectService {
 	@Autowired
 	DualHashBidiMap cognitoIdMap;
 
-	public static Logger APIGatewayLogger = LoggerFactory.getLogger(RequestObjectService.class);
+	public static Logger log = LoggerFactory.getLogger(RequestObjectService.class);
 
 	public RequestResponse getInputObject(String uri, String method, Map<String, String> allParams,
 			String requestBody) {
@@ -65,7 +67,7 @@ public class RequestObjectService {
 		inputRequest.putAll(temp.match(uri));
 		inputRequest.putAll(allParams);
 
-		APIGatewayLogger.debug(method + " " + uri + " " + " \n$input object for template : " + inputRequest);
+		log.debug("{} : {}  $input object for template :  {}", method, uri, inputRequest);
 
 		return inputRequest;
 	}
@@ -75,7 +77,7 @@ public class RequestObjectService {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
-		APIGatewayLogger.debug(method + " " + uri + " " + " Generating RequestBody");
+		log.debug("{} : {}  Generating RequestBody", method, uri);
 
 		VelocityEngine velocityEngine = new VelocityEngine();
 
@@ -85,8 +87,9 @@ public class RequestObjectService {
 		if (integrationObject.getRequestTemplates() != null
 				&& integrationObject.getRequestTemplates().get("application/json") != null) {
 			if (integrationObject.getRequestTemplates().get("application/json").equals("__passthrough__")) {
-				APIGatewayLogger.debug(method + " " + uri + " " + " \"__passthrough__\" found");
-				APIGatewayLogger.debug("Sending requestBody :  " + requestBody);
+
+				log.debug("{} : {}   \"__passthrough__\" found for sending request body", method, uri);
+				log.debug("{} : {} Sending requestBody :  {}", uri, method, requestBody);
 				return requestBody;
 			} else {
 
@@ -100,13 +103,19 @@ public class RequestObjectService {
 				StringWriter writer = new StringWriter();
 				String template = integrationObject.getRequestTemplates().get("application/json");
 
+				 EventCartridge eventCartridge = new EventCartridge();
+				 eventCartridge.addInvalidReferenceEventHandler(new VTLInvalidReferenceEventHandler());
+				 eventCartridge.attachToContext(context);
+				 
 				if (velocityEngine.evaluate(context, writer, "requestTemplate", template)) {
-					APIGatewayLogger.debug(method + " " + uri + " " + " Template found and successfully merged ");
-					APIGatewayLogger.debug("RequestBody  :  " + writer.toString());
+
+					log.debug("{} : {}  Template found for request body and successfully merged ", uri, method);
+					log.debug("{} : {} RequestBody  :  {}", uri, method, writer.toString());
+					
 					return writer.toString();
 				} else {
-					APIGatewayLogger
-							.debug(method + " " + uri + " " + " Template found and merge failed..returning null");
+
+					log.debug("{} : {}  Template found and merge failed for requestbody..returning null", uri, method);
 					return null;
 				}
 			}
@@ -120,10 +129,11 @@ public class RequestObjectService {
 		String cognitoId = null;
 		if (sessionToken != null && cognitoIdMap.containsKey(sessionToken)) {
 
-			APIGatewayLogger.debug(request.getMethod() + " " + request.getRequestURI() + " " + "CogId : " + cognitoId
-					+ " sessionToken : " + sessionToken);
 			cognitoId = (String) cognitoIdMap.get(sessionToken);
 		}
+
+		log.debug("{} : {}  CogId : {} sessionToken :  {} ", request.getMethod(), request.getRequestURI(), cognitoId,
+				sessionToken);
 		return cognitoId;
 	}
 
@@ -243,7 +253,7 @@ public class RequestObjectService {
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
-		APIGatewayLogger.debug(method + " " + uri + " " + "Creating Request for Backend Started");
+		log.debug("{} : {}  Creating Request for Backend Started", method, uri);
 
 		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uri, method);
 
@@ -274,17 +284,17 @@ public class RequestObjectService {
 				}
 			}
 		}
-		APIGatewayLogger.debug(method + " " + uri + " " + "Request Header Params : " + headerParams);
-		APIGatewayLogger.debug(method + " " + uri + " " + "Request Path Params : " + pathParams);
-		APIGatewayLogger.debug(method + " " + uri + " " + "Request QueryString Params : " + querystringParams);
+		log.debug("{} : {}  Request Header Params :  {}", method, uri, headerParams);
+		log.debug("{} : {}  Request Path Params :  {}", method, uri, pathParams);
+		log.debug("{} : {}  Request QueryString Params :  {}", method, uri, querystringParams);
 
 //		Creating Request Body
 		String parsedRequestBody = getRequestBody(request, inputRequest, requestBody);
 
 //		Creating Url including Queryparams
 		URI targetUri = getTargetUri(integrationObject, pathParams, querystringParams);
-		APIGatewayLogger.debug(method + " " + uri + " " + "Backend URI : " + targetUri + " Backend Method : "
-				+ integrationObject.getHttpMethod());
+		log.debug("{} : {}  Backend URI :  {}  Backend Method : {}", method, uri, targetUri,
+				integrationObject.getHttpMethod());
 
 //		Creating Request
 		HttpUriRequest targetRequest = getRequiredRequest(targetUri, integrationObject.getHttpMethod(),

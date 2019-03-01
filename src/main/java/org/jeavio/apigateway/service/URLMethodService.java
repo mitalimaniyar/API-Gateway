@@ -17,7 +17,7 @@ public class URLMethodService {
 	@Autowired
 	Swagger swagger;
 
-	public static Logger APIGatewayLogger = LoggerFactory.getLogger(URLMethodService.class);
+	public static Logger log = LoggerFactory.getLogger(URLMethodService.class);
 
 	public UriTemplate getUriTemp(String uri, String method) throws Exception {
 		Set<String> urlSet = swagger.getPaths().keySet(); // Set of URis
@@ -25,7 +25,7 @@ public class URLMethodService {
 //		//Check whether the request method is allowed
 		if (urlSet.contains(uri) && swagger.getPaths().get(uri).get().keySet().contains(method)) {
 
-			APIGatewayLogger.debug(method + " " + uri + " " + " \nMatched URI: " + uri);
+			log.debug("{} : {} Matched URI: {}", method, uri, uri);
 			return new UriTemplate(uri);
 		} else {
 //        	 //Get List of UriTemplate objects
@@ -46,11 +46,11 @@ public class URLMethodService {
 			}
 			if (matchedTemplate != null
 					&& swagger.getPaths().get(matchedTemplate.toString()).get().keySet().contains(method)) {
-				APIGatewayLogger.debug(method + " " + uri + " " + " \nMatched URI: " + matchedTemplate.toString());
+				log.debug("{} : {}  Matched URI: ", method, uri, matchedTemplate.toString());
 				return matchedTemplate;
 			} else {
-				APIGatewayLogger.debug(method + " " + uri + " "
-						+ " \n No Matching URI Found or Method not allowed for that URI...throwing Exception ");
+				log.debug("{} : {}  No Matching URI Found or Method not allowed for that URI...throwing Exception ",
+						method, uri);
 				throw new Exception("No match Found Exception");
 			}
 		}

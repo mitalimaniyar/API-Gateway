@@ -27,15 +27,15 @@ import org.springframework.http.HttpHeaders;
 
 import org.springframework.http.ResponseEntity;
 
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "*", methods= {RequestMethod.DELETE, RequestMethod.GET, RequestMethod.PATCH, RequestMethod.POST, RequestMethod.PUT}, allowedHeaders = "*")
 public class APIGatewayController {
 
 	@Autowired
@@ -52,38 +52,38 @@ public class APIGatewayController {
 
 	@Autowired
 	ResponseObjectService responseObjectService;
-	
-	public static Logger APIGatewayLogger = LoggerFactory.getLogger(APIGatewayController.class);
 
+	public static Logger log = LoggerFactory.getLogger(APIGatewayController.class);
 
 	@RequestMapping(produces = { "application/json" })
-	public ResponseEntity<Object> UrlMapper(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> allParams,
-			@RequestBody(required = false) String requestBody) {
+	public ResponseEntity<Object> UrlMapper(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam Map<String, String> allParams, @RequestBody(required = false) String requestBody) {
 
 		// URL parsing
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
-		
-		APIGatewayLogger.debug("Request from Frontend : "+ method+" "+uri);
+
+		log.debug("Request from Frontend : {} : {}", method, uri);
 
 		RequestResponse inputRequest = requestObjectService.getInputObject(uri, method, allParams, requestBody);
-		
 
 		HttpUriRequest requestSend = requestObjectService.createRequest(request, inputRequest, requestBody);
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;
 		String responseBody = null;
-		HttpHeaders headers=null;
-		int responseStatus=200;
+		HttpHeaders headers = null;
+		int responseStatus = 200;
 
 		try {
 
 			backendResponse = (CloseableHttpResponse) httpclient.execute(requestSend);
-			APIGatewayLogger.debug(method+" "+uri+" "+"Request send to backend and Response obtained");
-			responseBody = responseObjectService.getResponseBody(uri,method, backendResponse);
-			headers=responseObjectService.getResponseHeaders(uri,method,backendResponse);
-			responseStatus=responseObjectService.getResponseStatus(uri,method,backendResponse);
+
+			log.debug("{} : {} Request send to backend and Response obtained", method, uri);
+
+			responseBody = responseObjectService.getResponseBody(uri, method, backendResponse);
+			headers = responseObjectService.getResponseHeaders(uri, method, backendResponse);
+			responseStatus = responseObjectService.getResponseStatus(uri, method, backendResponse);
 
 		} catch (IOException e1) {
 
@@ -95,15 +95,14 @@ public class APIGatewayController {
 
 			try {
 
-
 				JSONParser parser = new JSONParser();
 				JSONObject credentials = (JSONObject) ((JSONObject) parser.parse(responseBody)).get("credentials");
-				
-				String sessionToken=(String) credentials.get("sessionToken");
-				String cogId=(String) credentials.get("identityId");
-				cognitoIdMap.put(sessionToken,cogId);
-				
-				APIGatewayLogger.debug(method+" "+uri+" "+"On Login Request manipulating CogIdMap for cogId : "+cogId);
+
+				String sessionToken = (String) credentials.get("sessionToken");
+				String cogId = (String) credentials.get("identityId");
+				cognitoIdMap.put(sessionToken, cogId);
+
+				log.debug("{} : {}  On Login Request manipulating CogIdMap for cogId : {}", method, uri, cogId);
 
 			} catch (ParseException e1) {
 				// TODO Auto-generated catch block
@@ -121,11 +120,12 @@ public class APIGatewayController {
 				JSONParser parser = new JSONParser();
 				JSONObject credentials = (JSONObject) ((JSONObject) parser.parse(responseBody));
 
-				String sessionToken=(String) credentials.get("sessionToken");
-				String cogId=(String) credentials.get("identityId");
-				cognitoIdMap.put(sessionToken,cogId);
-				
-				APIGatewayLogger.debug(method+" "+uri+" "+"Refreshing Credentials : Generating new sessionToken for cogId :  "+cogId);
+				String sessionToken = (String) credentials.get("sessionToken");
+				String cogId = (String) credentials.get("identityId");
+				cognitoIdMap.put(sessionToken, cogId);
+
+				log.debug("{} : {} Refreshing Credentials : Generating new sessionToken for cogId :  {}", method, uri,
+						cogId);
 
 			} catch (ParseException e1) {
 				// TODO Auto-generated catch block
@@ -136,10 +136,10 @@ public class APIGatewayController {
 			}
 
 		}
-		
+
 		ResponseEntity<Object> res = ResponseEntity.status(responseStatus).headers(headers).body(responseBody);
-		
-		APIGatewayLogger.debug(method+" "+uri+" "+"Sending request to frontend ");
+
+		log.debug("{} : {}  Sending request to frontend ", method, uri);
 		return res;
 
 	}

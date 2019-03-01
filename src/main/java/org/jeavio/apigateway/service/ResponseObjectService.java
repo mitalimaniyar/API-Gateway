@@ -10,6 +10,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.util.EntityUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.app.event.EventCartridge;
+import org.jeavio.apigateway.EventHandler.VTLInvalidReferenceEventHandler;
 import org.jeavio.apigateway.model.IntegrationResponse;
 import org.jeavio.apigateway.model.RequestResponse;
 import org.slf4j.Logger;
@@ -22,7 +24,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ResponseObjectService {
 
-	public static Logger APIGatewayLogger = LoggerFactory.getLogger(ResponseObjectService.class);
+	public static Logger log = LoggerFactory.getLogger(ResponseObjectService.class);
 
 	@Autowired
 	IntegrationService integrationService;
@@ -33,7 +35,7 @@ public class ResponseObjectService {
 	public String getResponseBody(String uri, String method, HttpResponse backendResponse)
 			throws ClientProtocolException, IOException {
 
-		APIGatewayLogger.debug(method + " " + uri + " " + " Generating ResponseBody");
+		log.debug("{} : {}  Generating ResponseBody", method, uri);
 		Integer status = backendResponse.getStatusLine().getStatusCode();
 
 		IntegrationResponse integratedResponse = getIntegratedResponse(uri, method, status);
@@ -44,7 +46,7 @@ public class ResponseObjectService {
 
 		String responseBody = EntityUtils.toString(entity);
 
-		APIGatewayLogger.debug(method + " " + uri + " " + " \n Response Body from Backend: " + responseBody);
+		log.debug("{} : {}  Response Body from Backend: {}", method, uri, responseBody);
 
 //		Parsing templates
 
@@ -55,8 +57,8 @@ public class ResponseObjectService {
 		if (integratedResponse.getResponseTemplates() == null || template == null
 				|| template.equals("__passthrough__")) {
 
-			APIGatewayLogger.debug(method + " " + uri + " " + "\n Template Not Found or \"__passthrough__\" found...");
-			APIGatewayLogger.debug("Sending Response Body : " + responseBody);
+			log.debug("{} : {}  Template Not Found or \"__passthrough__\" found...", method, uri);
+			log.debug("{} : {}  Sending Response Body :  {}", method, uri, responseBody);
 			return responseBody;
 		} else {
 
@@ -69,13 +71,17 @@ public class ResponseObjectService {
 			context.put("input", outputResponse);
 			StringWriter writer = new StringWriter();
 
+			 EventCartridge eventCartridge = new EventCartridge();
+			 eventCartridge.addInvalidReferenceEventHandler(new VTLInvalidReferenceEventHandler());
+			 eventCartridge.attachToContext(context);
+			 
 			if (velocityEngine.evaluate(context, writer, "responseTemplate", template)) {
-				APIGatewayLogger.debug(method + " " + uri + " " + "\n Template Found & successfuly merged");
-				APIGatewayLogger.debug("Sending Response Body : " + writer.toString());
+				log.debug("{} : {}  Template Found & successfuly merged", method, uri);
+				log.debug("{} : {}  Sending Response Body :  {}", method, uri, writer.toString());
 				return writer.toString();
 			} else {
-				APIGatewayLogger.debug(method + " " + uri + " " + "\n Template Found & merge failed");
-				APIGatewayLogger.debug("Sending No Response Body ");
+				log.debug("{} : {}  Template Found & merge failed", method, uri);
+				log.debug("{} : {} Sending No Response Body ", method, uri);
 				return null;
 			}
 		}
@@ -83,7 +89,7 @@ public class ResponseObjectService {
 
 	public HttpHeaders getResponseHeaders(String uri, String method, HttpResponse backendResponse) {
 
-		APIGatewayLogger.debug(method + " " + uri + " " + " Generating ResponseHeaders");
+		log.debug("{} : {}  Generating ResponseHeaders", method, uri);
 
 		Integer status = backendResponse.getStatusLine().getStatusCode();
 
@@ -110,14 +116,14 @@ public class ResponseObjectService {
 				headers.add(paramName, paramValue);
 		}
 
-		APIGatewayLogger.debug(method + " " + uri + " " + "\n Headers to be sent to frontend : " + headers);
+		log.debug("{} : {}  Headers to be sent to frontend :  {}", method, uri, headers);
 		return headers;
 
 	}
 
 	public int getResponseStatus(String uri, String method, HttpResponse backendResponse) {
 
-		APIGatewayLogger.debug(method + " " + uri + " " + " Generating ResponseStatus");
+		log.debug("{} : {}  Generating ResponseStatus", method, uri);
 
 		Integer status = backendResponse.getStatusLine().getStatusCode();
 
@@ -125,8 +131,8 @@ public class ResponseObjectService {
 
 		int statusCode = Integer.parseInt(integratedResponse.getStatusCode());
 
-		APIGatewayLogger.debug(method + " " + uri + " " + " \n Response Code from AWS Backend : " + status
-				+ " \nResponse code to be sent to backend : " + statusCode);
+		log.debug("{} : {} Response Code from AWS Backend : {}  Response code to be sent to backend :  {}", method, uri,
+				status, statusCode);
 		return statusCode;
 	}
 
