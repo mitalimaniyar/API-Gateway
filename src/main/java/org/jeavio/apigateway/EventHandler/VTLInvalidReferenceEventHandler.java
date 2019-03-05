@@ -1,6 +1,5 @@
 package org.jeavio.apigateway.EventHandler;
 
-
 import org.apache.velocity.app.event.InvalidReferenceEventHandler;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.util.introspection.Info;
@@ -9,18 +8,13 @@ import org.slf4j.LoggerFactory;
 
 public class VTLInvalidReferenceEventHandler implements InvalidReferenceEventHandler {
 
-	public static Logger log=LoggerFactory.getLogger(VTLInvalidReferenceEventHandler.class);
+	public static Logger log = LoggerFactory.getLogger(VTLInvalidReferenceEventHandler.class);
+
 	@Override
 	public Object invalidGetMethod(Context context, String reference, Object object, String property, Info info) {
 		// TODO Auto-generated method stub
 		reportInvalidReference(reference, info);
 		return "";
-	}
-
-	private void reportInvalidReference(String reference, Info info) {
-		// TODO Auto-generated method stub
-		log.info("{} : {}",reference,info);
-		
 	}
 
 	@Override
@@ -34,11 +28,17 @@ public class VTLInvalidReferenceEventHandler implements InvalidReferenceEventHan
 	public Object invalidMethod(Context context, String reference, Object object, String method, Info info) {
 		// TODO Auto-generated method stub
 		if (reference == null) {
-		      reportInvalidReference(object.getClass().getName() + "." + method, info);
-		    } else {
-		      reportInvalidReference(reference, info);
-		    }
+			reportInvalidReference(object.getClass().getName() + "." + method, info);
+		} else {
+			reportInvalidReference(reference, info);
+		}
 		return "";
+	}
+
+	private void reportInvalidReference(String reference, Info info) {
+		// TODO Auto-generated method stub
+		log.debug("{} : {}", reference, info);
+
 	}
 
 }

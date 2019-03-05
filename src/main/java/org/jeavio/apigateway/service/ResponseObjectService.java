@@ -11,7 +11,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
-import org.jeavio.apigateway.EventHandler.VTLInvalidReferenceEventHandler;
 import org.jeavio.apigateway.model.IntegrationResponse;
 import org.jeavio.apigateway.model.RequestResponse;
 import org.slf4j.Logger;
@@ -31,6 +30,9 @@ public class ResponseObjectService {
 
 	@Autowired
 	URLMethodService urlMethodService;
+
+	@Autowired
+	EventCartridge eventCartridge;
 
 	public String getResponseBody(String uri, String method, HttpResponse backendResponse)
 			throws ClientProtocolException, IOException {
@@ -71,10 +73,8 @@ public class ResponseObjectService {
 			context.put("input", outputResponse);
 			StringWriter writer = new StringWriter();
 
-			 EventCartridge eventCartridge = new EventCartridge();
-			 eventCartridge.addInvalidReferenceEventHandler(new VTLInvalidReferenceEventHandler());
-			 eventCartridge.attachToContext(context);
-			 
+			eventCartridge.attachToContext(context);
+
 			if (velocityEngine.evaluate(context, writer, "responseTemplate", template)) {
 				log.debug("{} : {}  Template Found & successfuly merged", method, uri);
 				log.debug("{} : {}  Sending Response Body :  {}", method, uri, writer.toString());

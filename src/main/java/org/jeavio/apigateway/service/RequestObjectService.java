@@ -26,7 +26,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
-import org.jeavio.apigateway.EventHandler.VTLInvalidReferenceEventHandler;
+import org.jeavio.apigateway.model.GatewayContext;
 import org.jeavio.apigateway.model.GatewayIntegration;
 import org.jeavio.apigateway.model.RequestResponse;
 import org.slf4j.Logger;
@@ -47,6 +47,9 @@ public class RequestObjectService {
 	@Autowired
 	DualHashBidiMap cognitoIdMap;
 
+	@Autowired
+	EventCartridge eventCartridge;
+
 	public static Logger log = LoggerFactory.getLogger(RequestObjectService.class);
 
 	public RequestResponse getInputObject(String uri, String method, Map<String, String> allParams,
@@ -61,6 +64,8 @@ public class RequestObjectService {
 		try {
 			temp = urlMethodService.getUriTemp(uri, method);
 		} catch (Exception e) {
+			log.error("Exception occured in finding uri {} : {}", method, uri);
+			log.error("Error: ", e);
 			e.printStackTrace();
 		}
 
@@ -94,24 +99,20 @@ public class RequestObjectService {
 			} else {
 
 				VelocityContext context = new VelocityContext();
-				if (request.getHeader("x-amz-security-token") != null) {
 
-					context.put("context", getContextObject(request));
-				}
-
+				context.put("context", getContextObject(request));
 				context.put("input", inputRequest);
+				
 				StringWriter writer = new StringWriter();
 				String template = integrationObject.getRequestTemplates().get("application/json");
 
-				 EventCartridge eventCartridge = new EventCartridge();
-				 eventCartridge.addInvalidReferenceEventHandler(new VTLInvalidReferenceEventHandler());
-				 eventCartridge.attachToContext(context);
-				 
+				eventCartridge.attachToContext(context);
+
 				if (velocityEngine.evaluate(context, writer, "requestTemplate", template)) {
 
 					log.debug("{} : {}  Template found for request body and successfully merged ", uri, method);
 					log.debug("{} : {} RequestBody  :  {}", uri, method, writer.toString());
-					
+
 					return writer.toString();
 				} else {
 
@@ -137,13 +138,18 @@ public class RequestObjectService {
 		return cognitoId;
 	}
 
-	private Map<String, Map<String, String>> getContextObject(HttpServletRequest request) {
-		Map<String, Map<String, String>> context1 = new LinkedHashMap<String, Map<String, String>>();
+	private GatewayContext getContextObject(HttpServletRequest request) {
+		GatewayContext context = new GatewayContext();
+		
 		Map<String, String> identity = new LinkedHashMap<String, String>();
 		identity.put("cognitoIdentityId", getCognitoId(request));
-		context1.put("identity", identity);
+		identity.put("userAgent",request.getHeader("User-Agent"));
+		
+		context.setIdentity(identity);
+		context.setHttpMethod(request.getMethod());
+		context.setProtocol(request.getProtocol());
 
-		return context1;
+		return context;
 	}
 
 	private String interpretParamValue(HttpServletRequest request, String value, RequestResponse inputRequest) {
