@@ -12,9 +12,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.jeavio.apigateway.model.RequestResponse;
-import org.jeavio.apigateway.model.Swagger;
-import org.jeavio.apigateway.service.IntegrationService;
+import org.jeavio.apigateway.model.Input;
+import org.jeavio.apigateway.model.Swagger;										
 import org.jeavio.apigateway.service.RequestObjectService;
 import org.jeavio.apigateway.service.ResponseObjectService;
 
@@ -42,9 +41,6 @@ public class APIGatewayController {
 	Swagger swagger;
 
 	@Autowired
-	IntegrationService integrationService;
-
-	@Autowired
 	RequestObjectService requestObjectService;
 
 	@Autowired
@@ -56,7 +52,7 @@ public class APIGatewayController {
 	public static Logger log = LoggerFactory.getLogger(APIGatewayController.class);
 
 	@RequestMapping(produces = { "application/json" })
-	public ResponseEntity<Object> UrlMapper(HttpServletRequest request, HttpServletResponse response,
+	public ResponseEntity<Object> processRequest(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam Map<String, String> allParams, @RequestBody(required = false) String requestBody) {
 
 		// URL parsing
@@ -65,7 +61,7 @@ public class APIGatewayController {
 
 		log.debug("Request from Frontend : {} : {}", method, uri);
 
-		RequestResponse inputRequest = requestObjectService.getInputObject(uri, method, allParams, requestBody);
+		Input inputRequest = requestObjectService.getInputObject(uri, method, allParams, requestBody);
 
 		HttpUriRequest requestSend = requestObjectService.createRequest(request, inputRequest, requestBody);
 

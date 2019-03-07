@@ -12,7 +12,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
 import org.jeavio.apigateway.model.IntegrationResponse;
-import org.jeavio.apigateway.model.RequestResponse;
+import org.jeavio.apigateway.model.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +26,7 @@ public class ResponseObjectService {
 	public static Logger log = LoggerFactory.getLogger(ResponseObjectService.class);
 
 	@Autowired
-	IntegrationService integrationService;
-
-	@Autowired
-	URLMethodService urlMethodService;
+	SwaggerService swaggerService;
 
 	@Autowired
 	EventCartridge eventCartridge;
@@ -64,7 +61,7 @@ public class ResponseObjectService {
 			return responseBody;
 		} else {
 
-			RequestResponse outputResponse = new RequestResponse();
+			Input outputResponse = new Input();
 			outputResponse.putBody(responseBody);
 
 			VelocityEngine velocityEngine = new VelocityEngine();
@@ -138,10 +135,10 @@ public class ResponseObjectService {
 
 	private IntegrationResponse getIntegratedResponse(String uri, String method, Integer status) {
 
-		IntegrationResponse integratedResponse = integrationService.getIntegrationObject(uri, method).getResponses()
+		IntegrationResponse integratedResponse = swaggerService.getGatewayIntegration(uri, method).getResponses()
 				.get(status.toString());
 		if (integratedResponse == null) {
-			integratedResponse = integrationService.getIntegrationObject(uri, method).getResponses().get("default");
+			integratedResponse = swaggerService.getGatewayIntegration(uri, method).getResponses().get("default");
 		}
 		return integratedResponse;
 	}

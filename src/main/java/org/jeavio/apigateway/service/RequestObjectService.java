@@ -28,7 +28,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
 import org.jeavio.apigateway.model.GatewayContext;
 import org.jeavio.apigateway.model.GatewayIntegration;
-import org.jeavio.apigateway.model.RequestResponse;
+import org.jeavio.apigateway.model.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +39,7 @@ import org.springframework.web.util.UriTemplate;
 public class RequestObjectService {
 
 	@Autowired
-	URLMethodService urlMethodService;
-
-	@Autowired
-	IntegrationService integrationService;
+	SwaggerService swaggerService;
 
 	@Autowired
 	DualHashBidiMap cognitoIdMap;
@@ -52,24 +49,25 @@ public class RequestObjectService {
 
 	public static Logger log = LoggerFactory.getLogger(RequestObjectService.class);
 
-	public RequestResponse getInputObject(String uri, String method, Map<String, String> allParams,
+	public Input getInputObject(String uri, String method, Map<String, String> allParams,
 			String requestBody) {
 
-		RequestResponse inputRequest = new RequestResponse();
+		Input inputRequest = new Input();
 		if (requestBody != null && !requestBody.isEmpty()) {
 			inputRequest.putBody(requestBody);
 		}
 
 		UriTemplate temp = null;
 		try {
-			temp = urlMethodService.getUriTemp(uri, method);
+			temp = swaggerService.getUriTemplate(uri, method);
+			inputRequest.putAll(temp.match(uri));
 		} catch (Exception e) {
 			log.error("Exception occured in finding uri {} : {}", method, uri);
 			log.error("Error: ", e);
 			e.printStackTrace();
 		}
 
-		inputRequest.putAll(temp.match(uri));
+		
 		inputRequest.putAll(allParams);
 
 		log.debug("{} : {}  $input object for template :  {}", method, uri, inputRequest);
@@ -77,7 +75,7 @@ public class RequestObjectService {
 		return inputRequest;
 	}
 
-	public String getRequestBody(HttpServletRequest request, RequestResponse inputRequest, String requestBody) {
+	public String getRequestBody(HttpServletRequest request, Input inputRequest, String requestBody) {
 
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
@@ -86,7 +84,7 @@ public class RequestObjectService {
 
 		VelocityEngine velocityEngine = new VelocityEngine();
 
-		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uri, method);
+		GatewayIntegration integrationObject = swaggerService.getGatewayIntegration(uri, method);
 
 //		Template requestTemplate;
 		if (integrationObject.getRequestTemplates() != null
@@ -152,7 +150,7 @@ public class RequestObjectService {
 		return context;
 	}
 
-	private String interpretParamValue(HttpServletRequest request, String value, RequestResponse inputRequest) {
+	private String interpretParamValue(HttpServletRequest request, String value, Input inputRequest) {
 		String paramValue = null;
 		if (value.indexOf("'") != -1) {
 			paramValue = value.replace("'", "");
@@ -254,14 +252,14 @@ public class RequestObjectService {
 		}
 	}
 
-	public HttpUriRequest createRequest(HttpServletRequest request, RequestResponse inputRequest, String requestBody) {
+	public HttpUriRequest createRequest(HttpServletRequest request, Input inputRequest, String requestBody) {
 
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
 		log.debug("{} : {}  Creating Request for Backend Started", method, uri);
 
-		GatewayIntegration integrationObject = integrationService.getIntegrationObject(uri, method);
+		GatewayIntegration integrationObject = swaggerService.getGatewayIntegration(uri, method);
 
 //		Setting Parameters
 		Map<String, String> requestParameters = integrationObject.getRequestParameters();
