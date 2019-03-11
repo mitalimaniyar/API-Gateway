@@ -19,7 +19,7 @@ public class SwaggerConfiguration {
 	@Bean
 	public Swagger getSwagger() {
 
-		String filename = "/home/jeavio64/Downloads/swagger-update-qa.json";
+		String filename = "/home/swagger-update-qa.json";
 
 		Swagger swagger = swaggerService.parse(filename);
 
