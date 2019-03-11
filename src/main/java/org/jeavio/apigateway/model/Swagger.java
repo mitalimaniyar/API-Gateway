@@ -9,7 +9,7 @@ public class Swagger {
 	private Map<String, String> info;
 	private String host;
 	private List<String> schemes;
-	private Map<String, UrlObject> paths;
+	private Map<String, UrlPath> paths;
 	private Map<String, Object> definitions;
 
 	public String getSwagger() {
@@ -44,11 +44,11 @@ public class Swagger {
 		this.schemes = schemes;
 	}
 
-	public Map<String, UrlObject> getPaths() {
+	public Map<String, UrlPath> getPaths() {
 		return paths;
 	}
 
-	public void setPaths(Map<String, UrlObject> paths) {
+	public void setPaths(Map<String, UrlPath> paths) {
 		this.paths = paths;
 	}
 

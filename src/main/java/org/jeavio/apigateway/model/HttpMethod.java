@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Component
-public class HttpMethodObject {
+public class HttpMethod {
 
 	private List<Parameter> parameters;
 	private Map<String, Response> responses;

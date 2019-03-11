@@ -10,48 +10,48 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Component
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UrlObject {
+public class UrlPath {
 
-	private Map<String, HttpMethodObject> httpMethodServiceMap = new LinkedHashMap<String, HttpMethodObject>();
+	private Map<String, HttpMethod> httpMethodServiceMap = new LinkedHashMap<String, HttpMethod>();
 	private List<Parameter> parameters;
 
-	public void setGet(HttpMethodObject object) {
+	public void setGet(HttpMethod object) {
 		httpMethodServiceMap.put("get", object);
 	}
 
-	public void setPost(HttpMethodObject object) {
+	public void setPost(HttpMethod object) {
 		httpMethodServiceMap.put("post", object);
 	}
 
-	public void setPut(HttpMethodObject object) {
+	public void setPut(HttpMethod object) {
 		httpMethodServiceMap.put("put", object);
 	}
 
-	public void setPatch(HttpMethodObject object) {
+	public void setPatch(HttpMethod object) {
 		httpMethodServiceMap.put("patch", object);
 	}
 
-	public void setDelete(HttpMethodObject object) {
+	public void setDelete(HttpMethod object) {
 		httpMethodServiceMap.put("delete", object);
 	}
 
-	public void setHead(HttpMethodObject object) {
+	public void setHead(HttpMethod object) {
 		httpMethodServiceMap.put("head", object);
 	}
 
-	public void setOptions(HttpMethodObject object) {
+	public void setOptions(HttpMethod object) {
 		httpMethodServiceMap.put("options", object);
 	}
 
-	public void setTrace(HttpMethodObject object) {
+	public void setTrace(HttpMethod object) {
 		httpMethodServiceMap.put("trace", object);
 	}
 
-	public HttpMethodObject get(String method) {
+	public HttpMethod get(String method) {
 		return httpMethodServiceMap.get(method);
 	}
 
-	public Map<String, HttpMethodObject> get() {
+	public Map<String, HttpMethod> get() {
 		return httpMethodServiceMap;
 	}
 

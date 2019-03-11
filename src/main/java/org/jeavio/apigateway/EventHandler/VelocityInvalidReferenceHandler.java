@@ -6,9 +6,9 @@ import org.apache.velocity.util.introspection.Info;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VTLInvalidReferenceEventHandler implements InvalidReferenceEventHandler {
+public class VelocityInvalidReferenceHandler implements InvalidReferenceEventHandler {
 
-	public static Logger log = LoggerFactory.getLogger(VTLInvalidReferenceEventHandler.class);
+	public static Logger log = LoggerFactory.getLogger(VelocityInvalidReferenceHandler.class);
 
 	@Override
 	public Object invalidGetMethod(Context context, String reference, Object object, String property, Info info) {

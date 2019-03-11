@@ -12,11 +12,11 @@ import com.jayway.jsonpath.JsonPath;
 import net.minidev.json.JSONValue;
 
 @Component
-public class RequestResponse {
+public class Input {
 
 	private Map<String, Object> properties = new LinkedHashMap<>();
 
-	public static Logger log = LoggerFactory.getLogger(RequestResponse.class);
+	public static Logger log = LoggerFactory.getLogger(Input.class);
 
 //	Method for $input in VTL
 	public Object path(String reference) {
@@ -54,8 +54,8 @@ public class RequestResponse {
 		properties.putAll(map);
 	}
 
-	public void putBody(String Body) {
-		properties.putAll(JsonPath.parse(Body).read("$"));
+	public void putBody(String body) {
+		properties.putAll(JsonPath.parse(body).read("$"));
 	}
 
 }
