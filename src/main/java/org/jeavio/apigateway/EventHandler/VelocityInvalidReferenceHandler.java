@@ -6,6 +6,14 @@ import org.apache.velocity.util.introspection.Info;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/*
+ * Used as custom invalid reference event handler in velocity template parsing
+ * 
+ * InvalidReferenceException is thrown when a property has null value or a method is not defined
+ * and it will be handled by this method in which instead of returning null as default value we can
+ * define custom values ,here "" i.e. blank.
+ * 
+ */
 public class VelocityInvalidReferenceHandler implements InvalidReferenceEventHandler {
 
 	public static Logger log = LoggerFactory.getLogger(VelocityInvalidReferenceHandler.class);

@@ -4,6 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
+/*
+ * used to redefine frontend response by using backend response
+ * 
+ * Hierarchy : swagger->paths->{url}->method->x-amazon-apigateway-integration->Responses->{response code}
+ */
 @Component
 public class IntegrationResponse {
 	private String statusCode;

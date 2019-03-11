@@ -11,6 +11,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Component
+
+/*
+ * Used to depict x-amazon-apigateway-integration of swagger file
+ * 
+ * Contains values that is used to reformat request and response
+ * 
+ * Hierarchy : swagger->paths->{url}->method->x-amazon-apigateway-integration
+ */
 public class GatewayIntegration {
 
 	private String credentials;

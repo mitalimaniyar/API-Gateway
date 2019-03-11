@@ -3,6 +3,14 @@ package org.jeavio.apigateway.model;
 import java.util.Map;
 import java.util.List;
 
+/*
+ * Core object
+ * contains all urls,all paths,all schemes
+ * contains definitions for processing request and response
+ * 
+ * Hierarchy : swagger
+ */
+
 public class Swagger {
 
 	private String swagger;

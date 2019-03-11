@@ -2,6 +2,13 @@ package org.jeavio.apigateway.model;
 
 import org.springframework.stereotype.Component;
 
+/*
+ *used to define parameter
+ * 
+ * Hierarchy : swagger->paths->{url}->method->parameters
+ * 				OR
+ * Hierarchy : swagger->paths->{url}->parameters
+ */
 @Component
 public class Parameter {
 

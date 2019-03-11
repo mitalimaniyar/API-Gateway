@@ -3,12 +3,18 @@ package org.jeavio.apigateway.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+/*
+ * Generally Used to depict $context object in Velocity Template
+ */
+@Component
 public class GatewayContext {
 
 	private Map<String, String> identity = new LinkedHashMap<String, String>();
 	private String httpMethod;
 	private String protocol;
-	
+
 	public Map<String, String> getIdentity() {
 		return identity;
 	}

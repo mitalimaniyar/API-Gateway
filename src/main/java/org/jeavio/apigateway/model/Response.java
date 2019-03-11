@@ -4,6 +4,11 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+/*
+ * used to define types of response that are going to be sent to frontend
+ * 
+ * Hierarchy : swagger->paths->{url}->method->response
+ */
 @Component
 public class Response {
 

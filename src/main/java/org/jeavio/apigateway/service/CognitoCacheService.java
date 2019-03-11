@@ -10,9 +10,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+/*
+ * This class provides an interface to communicate with CogIdMap
+ * 
+ * 1.populateCognitoCache : used to add new entry or update sessionToken in cognitoCache
+ *                          on specific url requests, here "api/login" && "api/refreshCredentials"
+ * 2.addEntey : get JsonObject containig sessionToken & cogId from `populateCognitoCache` method
+ * 				and add/update it in cogIdMap
+ * 3.getCognitoId : get CogId of specific sessionToken
+ * 
+ */
 @Service
 public class CognitoCacheService {
+	
 	@Autowired
 	DualHashBidiMap cognitoIdMap;
 

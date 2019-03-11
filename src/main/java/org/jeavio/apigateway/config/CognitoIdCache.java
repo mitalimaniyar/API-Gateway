@@ -4,6 +4,11 @@ import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/*
+ * CognitoIdMap used to map sessionToken with CognitoId
+ * 
+ * CognitoId is used in AWS service as usr credential
+ */
 @Configuration
 public class CognitoIdCache {
 
@@ -12,5 +17,5 @@ public class CognitoIdCache {
 		DualHashBidiMap cognitoIdMap = new DualHashBidiMap();
 		return cognitoIdMap;
 	}
-    
+
 }

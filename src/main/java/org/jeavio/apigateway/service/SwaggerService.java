@@ -16,6 +16,16 @@ import org.springframework.web.util.UriTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/*
+ * Provides an interface that is used in communication with swagger object for
+ * request/response processing
+ * 
+ * 1.parse : used to parse swagger.json file to swagger object
+ * 2.getGatewayIntegration : used to return x-amazon-apigateway-integration
+ *                           object correspond to a uri and method
+ * 3.getUriTemplate : used to get UriTemplate object from request uri and method
+ * 
+ */
 @Service
 public class SwaggerService {
 
@@ -40,6 +50,7 @@ public class SwaggerService {
 	}
 
 	public GatewayIntegration getGatewayIntegration(String uri, String method) {
+		
 		// Check whether the request method is allowed
 		UriTemplate matchedTemplate = getUriTemplate(uri, method);
 		
@@ -56,6 +67,7 @@ public class SwaggerService {
 			log.debug("{} : {} Matched URI: {}", method, uri, uri);
 			return new UriTemplate(uri);
 		} else {
+			
 //        	 //Get List of UriTemplate objects
 			List<UriTemplate> templateList = new ArrayList<UriTemplate>();
 			for (String key : urlSet) {
@@ -63,7 +75,7 @@ public class SwaggerService {
 				templateList.add(uriTemplate);
 			}
 
-//			 //Check
+//			 //Check matching template
 			UriTemplate matchedTemplate = null;
 			for (UriTemplate urit : templateList) {
 				if (urit.matches(uri)) {

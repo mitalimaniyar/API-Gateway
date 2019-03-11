@@ -42,20 +42,26 @@ public class GatewayRequestProcessor {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;
 		
-
 		try {
 
 			backendResponse = (CloseableHttpResponse) httpclient.execute(backendRequest);
 
 			log.debug("{} : {} Request send to backend and Response obtained", method, uri);
 			
-		} catch (IOException e1) {
+		} catch (IOException e) {
 
-			e1.printStackTrace();
+			log.error("Error : ",e.getMessage());
 		}
 
 		ResponseEntity<Object> response = responseHandler.getResponse(uri,method,backendResponse);
-
+		
+		try {
+			
+			backendResponse.close();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
 		return response;
 	}
 

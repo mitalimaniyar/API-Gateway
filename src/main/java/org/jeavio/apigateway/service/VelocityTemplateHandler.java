@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/*
+ * Used for processing of velocity template
+ */
 @Service
 public class VelocityTemplateHandler {
 	

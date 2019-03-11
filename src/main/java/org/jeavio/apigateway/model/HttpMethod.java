@@ -12,6 +12,11 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+/*
+ * The object required to process by using url and method
+ * 
+ * Hierarchy : swagger->paths->{url}->method
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Component
 public class HttpMethod {
