@@ -23,9 +23,9 @@ public class SwaggerService {
 	ObjectMapper objectMapper;
 
 	Swagger swagger;
-	
+
 	public static Logger log = LoggerFactory.getLogger(SwaggerService.class);
-	
+
 	public Swagger parse(String swaggerPath) {
 		swagger = new Swagger();
 		try {
@@ -38,21 +38,16 @@ public class SwaggerService {
 		}
 		return swagger;
 	}
-	
+
 	public GatewayIntegration getGatewayIntegration(String uri, String method) {
 		// Check whether the request method is allowed
-		UriTemplate matchedTemplate = null;
-		try {
-			matchedTemplate = getUriTemplate(uri, method);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		UriTemplate matchedTemplate = getUriTemplate(uri, method);
+		
 		return swagger.getPaths().get(matchedTemplate.toString()).get(method).getApigatewayIntegration();
 
 	}
-	
-	public UriTemplate getUriTemplate(String uri, String method) throws Exception {
+
+	public UriTemplate getUriTemplate(String uri, String method) {
 		Set<String> urlSet = swagger.getPaths().keySet(); // Set of URis
 
 //		//Check whether the request method is allowed
@@ -82,11 +77,9 @@ public class SwaggerService {
 				log.debug("{} : {}  Matched URI: ", method, uri, matchedTemplate.toString());
 				return matchedTemplate;
 			} else {
-				log.debug("{} : {}  No Matching URI Found or Method not allowed for that URI...throwing Exception ",
-						method, uri);
-				throw new Exception("No match Found Exception");
+				log.error("No match found for required url and method pair");
+				return null;
 			}
 		}
 	}
-
 }

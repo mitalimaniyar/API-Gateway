@@ -54,8 +54,8 @@ public class Input {
 		properties.putAll(map);
 	}
 
-	public void putBody(String Body) {
-		properties.putAll(JsonPath.parse(Body).read("$"));
+	public void putBody(String body) {
+		properties.putAll(JsonPath.parse(body).read("$"));
 	}
 
 }
