@@ -12,6 +12,9 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /*
  * The object required to process by using url and method
  * 
@@ -19,30 +22,15 @@ import com.fasterxml.jackson.annotation.JsonSetter;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Component
+
 public class HttpMethod {
 
-	private List<Parameter> parameters;
-	private Map<String, Response> responses;
+	@Getter	@Setter private List<Parameter> parameters;
+	@Getter	@Setter private Map<String, Response> responses;
 	private GatewayAuth apigatewayAuth;
 	private GatewayIntegration apigatewayIntegration;
 	private Map<String, Object> extraTuples = new LinkedHashMap<String, Object>();
-
-	public List<Parameter> getParameters() {
-		return parameters;
-	}
-
-	public void setParameters(List<Parameter> parameters) {
-		this.parameters = parameters;
-	}
-
-	public Map<String, Response> getResponses() {
-		return responses;
-	}
-
-	public void setResponses(Map<String, Response> response) {
-		this.responses = response;
-	}
-
+	
 	@JsonGetter("x-amazon-apigateway-auth")
 	public GatewayAuth getApigatewayAuth() {
 		return apigatewayAuth;

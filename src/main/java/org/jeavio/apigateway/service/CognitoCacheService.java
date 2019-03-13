@@ -1,15 +1,14 @@
 package org.jeavio.apigateway.service;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.jeavio.apigateway.model.CustomHttpRequest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 /*
  * This class provides an interface to communicate with CogIdMap
  * 
@@ -21,14 +20,13 @@ import org.springframework.stereotype.Service;
  * 
  */
 @Service
+@Slf4j
 public class CognitoCacheService {
 	
 	@Autowired
 	DualHashBidiMap cognitoIdMap;
 
 	private JSONParser parser = new JSONParser();
-	
-	public static Logger log = LoggerFactory.getLogger(CognitoCacheService.class);
 
 	public void populateCognitoCache(String uri, String responseBody) {
 		try {
@@ -57,7 +55,7 @@ public class CognitoCacheService {
 		cognitoIdMap.put(sessionToken, cogId);		
 	}
 
-	public String getCognitoId(HttpServletRequest request) {
+	public String getCognitoId(CustomHttpRequest request) {
 		String sessionToken = request.getHeader("x-amz-security-token");
 		String cognitoId = null;
 		if (sessionToken != null && cognitoIdMap.containsKey(sessionToken)) {

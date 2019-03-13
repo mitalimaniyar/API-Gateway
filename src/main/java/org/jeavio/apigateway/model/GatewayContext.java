@@ -5,38 +5,19 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /*
  * Generally Used to depict $context object in Velocity Template
  */
 @Component
+@Getter
+@Setter
 public class GatewayContext {
 
 	private Map<String, String> identity = new LinkedHashMap<String, String>();
 	private String httpMethod;
 	private String protocol;
-
-	public Map<String, String> getIdentity() {
-		return identity;
-	}
-
-	public void setIdentity(Map<String, String> identity) {
-		this.identity = identity;
-	}
-
-	public String getHttpMethod() {
-		return httpMethod;
-	}
-
-	public void setHttpMethod(String httpMethod) {
-		this.httpMethod = httpMethod;
-	}
-
-	public String getProtocol() {
-		return protocol;
-	}
-
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
 
 }

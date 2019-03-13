@@ -8,8 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -20,16 +18,18 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.jeavio.apigateway.model.CustomHttpRequest;
 import org.jeavio.apigateway.model.GatewayContext;
 import org.jeavio.apigateway.model.GatewayIntegration;
 import org.jeavio.apigateway.model.Input;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class RequestHandler {
 
 	@Autowired
@@ -41,10 +41,9 @@ public class RequestHandler {
 	@Autowired
 	CognitoCacheService cognitoCacheService;
 
-	public static Logger log = LoggerFactory.getLogger(RequestHandler.class);
+	public HttpUriRequest createRequest(CustomHttpRequest request) {
 
-	public HttpUriRequest createRequest(HttpServletRequest request, Map<String, String> allParams, String requestBody) {
-
+		
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
@@ -52,7 +51,7 @@ public class RequestHandler {
 		Map<String, String> requestParameters = integrationObject.getRequestParameters();
 
 //		Creating Input Object from request parameters & body
-		Input inputRequest = getInput(uri, method, allParams, requestBody);
+		Input inputRequest = getInput(uri,method,request);
 
 //		Getting Backend Parameters
 
@@ -68,7 +67,7 @@ public class RequestHandler {
 		log.debug("{} : {}  Request QueryString Params :  {}", method, uri, querystringParams);
 
 //		Creating Request Body
-		String parsedRequestBody = getRequestBody(request, inputRequest, requestBody);
+		String parsedRequestBody = getRequestBody(request, inputRequest);
 
 //		Creating Url including Queryparams
 		URI backendUrl = buildRequestUrl(integrationObject, pathParams, querystringParams);
@@ -90,10 +89,12 @@ public class RequestHandler {
 	/*
 	 * Creating Input object from requestPayload
 	 */
-	public Input getInput(String uri, String method, Map<String, String> allParams, String requestBody) {
+	public Input getInput(String uri, String method, CustomHttpRequest request) {
 
 		Input inputRequest = new Input();
 
+		String requestBody=request.getRequestBody();
+		
 		if (requestBody != null && !requestBody.isEmpty()) {
 			inputRequest.putBody(requestBody);
 		}
@@ -101,7 +102,7 @@ public class RequestHandler {
 		UriTemplate template = swaggerService.getUriTemplate(uri, method);
 
 		inputRequest.putAll(template.match(uri));
-		inputRequest.putAll(allParams);
+		inputRequest.putAll(request.getParameterMap());
 
 		log.debug("{} : {}  $input object for template :  {}", method, uri, inputRequest);
 
@@ -111,7 +112,7 @@ public class RequestHandler {
 	/*
 	 * Parsing request Parameters to be sent as header,querystring or path params
 	 */
-	private void parseRequestParams(HttpServletRequest request, Input inputRequest,
+	private void parseRequestParams(CustomHttpRequest request, Input inputRequest,
 			Map<String, String> requestParameters, Map<String, String> headerParams, Map<String, String> pathParams,
 			List<NameValuePair> querystringParams) {
 
@@ -140,11 +141,13 @@ public class RequestHandler {
 	/*
 	 * Used to get RequestBody for backend request
 	 */
-	public String getRequestBody(HttpServletRequest request, Input inputRequest, String requestBody) {
+	public String getRequestBody(CustomHttpRequest request, Input inputRequest) {
 
 		String uri = request.getRequestURI();
 		String method = request.getMethod().toLowerCase();
 
+		String requestBody=request.getRequestBody();
+		
 		log.debug("{} : {}  Generating RequestBody", method, uri);
 
 		GatewayIntegration integrationObject = swaggerService.getGatewayIntegration(uri, method);
@@ -217,7 +220,7 @@ public class RequestHandler {
 	/*
 	 * Construct $context object from request
 	 */
-	private GatewayContext getGatewayContext(HttpServletRequest request) {
+	private GatewayContext getGatewayContext(CustomHttpRequest request) {
 		GatewayContext context = new GatewayContext();
 
 		Map<String, String> identity = new LinkedHashMap<String, String>();
@@ -239,7 +242,7 @@ public class RequestHandler {
 	 * Method, 3. any paramvalue from frontend request - can be obtained by Input
 	 * object
 	 */
-	private String interpretParamValue(HttpServletRequest request, String value, Input inputRequest) {
+	private String interpretParamValue(CustomHttpRequest request, String value, Input inputRequest) {
 		String paramValue = null;
 		if (value.indexOf("'") != -1) {
 			paramValue = value.replace("'", "");
@@ -308,7 +311,7 @@ public class RequestHandler {
 	/*
 	 * Used to set request headers (if any) of backendRequest
 	 */
-	private void setHeaders(HttpServletRequest request, HttpUriRequest backendRequest,
+	private void setHeaders(CustomHttpRequest request, HttpUriRequest backendRequest,
 			Map<String, String> headerParams) {
 
 		if (!headerParams.isEmpty()) {

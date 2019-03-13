@@ -1,6 +1,10 @@
 package org.jeavio.apigateway.model;
 
 import java.util.Map;
+
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
 /*
@@ -10,7 +14,8 @@ import java.util.List;
  * 
  * Hierarchy : swagger
  */
-
+@Getter
+@Setter 
 public class Swagger {
 
 	private String swagger;
@@ -19,53 +24,5 @@ public class Swagger {
 	private List<String> schemes;
 	private Map<String, UrlPath> paths;
 	private Map<String, Object> definitions;
-
-	public String getSwagger() {
-		return swagger;
-	}
-
-	public void setSwagger(String swagger) {
-		this.swagger = swagger;
-	}
-
-	public Map<String, String> getInfo() {
-		return info;
-	}
-
-	public void setInfo(Map<String, String> info) {
-		this.info = info;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public List<String> getSchemes() {
-		return schemes;
-	}
-
-	public void setSchemes(List<String> schemes) {
-		this.schemes = schemes;
-	}
-
-	public Map<String, UrlPath> getPaths() {
-		return paths;
-	}
-
-	public void setPaths(Map<String, UrlPath> paths) {
-		this.paths = paths;
-	}
-
-	public Map<String, Object> getDefinitions() {
-		return definitions;
-	}
-
-	public void setDefinitions(Map<String, Object> definitions) {
-		this.definitions = definitions;
-	}
 
 }

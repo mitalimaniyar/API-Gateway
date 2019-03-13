@@ -4,39 +4,20 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /*
  * used to redefine frontend response by using backend response
  * 
  * Hierarchy : swagger->paths->{url}->method->x-amazon-apigateway-integration->Responses->{response code}
  */
 @Component
+@Getter	
+@Setter 
 public class IntegrationResponse {
 	private String statusCode;
 	private Map<String, String> responseParameters = new LinkedHashMap<String, String>();
 	private Map<String, String> responseTemplates = new LinkedHashMap<String, String>();
-
-	public String getStatusCode() {
-		return statusCode;
-	}
-
-	public void setStatusCode(String statusCode) {
-		this.statusCode = statusCode;
-	}
-
-	public Map<String, String> getResponseParameters() {
-		return responseParameters;
-	}
-
-	public void setResponseParameters(Map<String, String> responseParamters) {
-		this.responseParameters = responseParamters;
-	}
-
-	public Map<String, String> getResponseTemplates() {
-		return responseTemplates;
-	}
-
-	public void setResponseTemplates(Map<String, String> responseTemplates) {
-		this.responseTemplates = responseTemplates;
-	}
-
+	
 }

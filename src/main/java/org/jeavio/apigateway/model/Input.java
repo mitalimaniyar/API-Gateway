@@ -3,23 +3,21 @@ package org.jeavio.apigateway.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.JsonPath;
 
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONValue;
 
 /*
  * Generally used to depict $input objct in Velocity Template
  */
 @Component
+@Slf4j
 public class Input {
 
 	private Map<String, Object> properties = new LinkedHashMap<>();
-
-	public static Logger log = LoggerFactory.getLogger(Input.class);
 
 	/*
 	 * Below methods are generally used in Velocity references in $input object
@@ -39,7 +37,7 @@ public class Input {
 			patht = JsonPath.read(properties, reference);
 		} catch (Exception e) {
 			log.error("Exception occured in parsing json reference {}", reference);
-			log.error("Error: ", e.getMessage());
+			log.error("Error: ", e);
 			return "";
 		}
 		return patht;

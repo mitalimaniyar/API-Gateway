@@ -9,14 +9,16 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.jeavio.apigateway.model.CustomHttpRequest;
 import org.jeavio.apigateway.model.Swagger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class GatewayRequestProcessor {
 
 	@Autowired
@@ -28,16 +30,19 @@ public class GatewayRequestProcessor {
 	@Autowired
 	ResponseHandler responseHandler;
 	
-	public static Logger log=LoggerFactory.getLogger(GatewayRequestProcessor.class);
+	@Autowired
+	CustomRequestCreator customRequestCreator;
 
-	public ResponseEntity<Object> processRequest(HttpServletRequest request, Map<String, String> allParams,
+	public ResponseEntity<Object> processRequest(HttpServletRequest servletRequest, Map<String, String> allParams,
 			String requestBody) {
 
 		// URL parsing
-		String uri = request.getRequestURI();
-		String method = request.getMethod().toLowerCase();
+		String uri = servletRequest.getRequestURI();
+		String method = servletRequest.getMethod().toLowerCase();
+		
+		CustomHttpRequest request=customRequestCreator.parseIncomingRequest(servletRequest, allParams, requestBody);
 
-		HttpUriRequest backendRequest = requestHandler.createRequest(request, allParams, requestBody);
+		HttpUriRequest backendRequest = requestHandler.createRequest(request);
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;

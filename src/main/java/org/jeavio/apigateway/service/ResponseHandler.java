@@ -11,18 +11,17 @@ import org.apache.http.util.EntityUtils;
 
 import org.jeavio.apigateway.model.IntegrationResponse;
 import org.jeavio.apigateway.model.Input;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-@Service
-public class ResponseHandler {
+import lombok.extern.slf4j.Slf4j;
 
-	public static Logger log = LoggerFactory.getLogger(ResponseHandler.class);
+@Service
+@Slf4j
+public class ResponseHandler {
 
 	@Autowired
 	SwaggerService swaggerService;

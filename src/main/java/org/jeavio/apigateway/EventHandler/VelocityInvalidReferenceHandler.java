@@ -3,8 +3,8 @@ package org.jeavio.apigateway.EventHandler;
 import org.apache.velocity.app.event.InvalidReferenceEventHandler;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.util.introspection.Info;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /*
  * Used as custom invalid reference event handler in velocity template parsing
@@ -14,9 +14,8 @@ import org.slf4j.LoggerFactory;
  * define custom values ,here "" i.e. blank.
  * 
  */
+@Slf4j
 public class VelocityInvalidReferenceHandler implements InvalidReferenceEventHandler {
-
-	public static Logger log = LoggerFactory.getLogger(VelocityInvalidReferenceHandler.class);
 
 	@Override
 	public Object invalidGetMethod(Context context, String reference, Object object, String property, Info info) {

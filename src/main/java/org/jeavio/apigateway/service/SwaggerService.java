@@ -8,13 +8,13 @@ import java.util.Set;
 
 import org.jeavio.apigateway.model.GatewayIntegration;
 import org.jeavio.apigateway.model.Swagger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
 
 /*
  * Provides an interface that is used in communication with swagger object for
@@ -27,14 +27,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  */
 @Service
+@Slf4j
 public class SwaggerService {
 
 	@Autowired
 	ObjectMapper objectMapper;
 
 	Swagger swagger;
-
-	public static Logger log = LoggerFactory.getLogger(SwaggerService.class);
 
 	public Swagger parse(String swaggerPath) {
 		swagger = new Swagger();
