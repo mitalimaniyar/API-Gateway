@@ -1,4 +1,5 @@
 FROM mitalimaniyar/openjdk-alpine-maven
+RUN ls
 RUN mvn clean
 RUN mvn package -DskipTests
 WORKDIR ./target
