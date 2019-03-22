@@ -1,4 +1,4 @@
-FROM mitalimaniyar/openjdk-alpine-maven-git
+FROM openjdk:13
 RUN git clone https://github.com/mitalimaniyar/API-Gateway
 WORKDIR ./API-Gateway
 RUN mvn clean
