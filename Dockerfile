@@ -1,4 +1,4 @@
-FROM mitalimaniyar/openjdk-alpine-maven-git
+FROM maven:3-jdk-8-alpine
 ADD . /API-Gateway
 WORKDIR ./API-Gateway
 RUN mvn clean
