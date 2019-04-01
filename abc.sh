@@ -1,6 +1,7 @@
-echo "Hello"
-$a=2
-if [ $a = 2 ]
+read w
+if [ $w = 1]
 then
-  echo "Done"
+  echo "one"
+else
+  echo "zero"
 fi
