@@ -41,8 +41,6 @@ public class SwaggerService {
 			swagger = objectMapper.readValue(swaggerFile, Swagger.class);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			log.error("Error starting application");
 			log.error("Error : "+e);
 			System.exit(0);
