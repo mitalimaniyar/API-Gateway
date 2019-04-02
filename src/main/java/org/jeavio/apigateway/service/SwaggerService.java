@@ -1,7 +1,6 @@
 package org.jeavio.apigateway.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -38,12 +37,15 @@ public class SwaggerService {
 	public Swagger parse(String swaggerPath) {
 		swagger = new Swagger();
 		try {
+			File swaggerFile=new File(swaggerPath);
+			swagger = objectMapper.readValue(swaggerFile, Swagger.class);
 
-			swagger = objectMapper.readValue(new File(swaggerPath), Swagger.class);
-
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			log.error("Error starting application");
+			log.error("Error : "+e);
+			System.exit(0);
 		}
 		return swagger;
 	}

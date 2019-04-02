@@ -24,10 +24,9 @@ public class SwaggerConfiguration {
 
 //		String filename = "/home/jeavio64/Downloads/swagger-update-qa.json";
 		
-		String swaggerSource=swaggerPath;
-		Swagger swagger = swaggerService.parse(swaggerSource);
+		Swagger swagger = swaggerService.parse(swaggerPath);
 
-		log.info("Swagger File Source : " + swaggerSource);
+		log.info("Swagger File Source : " + swaggerPath);
 
 		return swagger;
 	}
