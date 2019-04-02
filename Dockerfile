@@ -1,6 +1,7 @@
-FROM mitalimaniyar/openjdk-alpine-maven-git
-RUN git clone https://github.com/mitalimaniyar/API-Gateway
+FROM maven:3-jdk-8-alpine
+ADD . /API-Gateway
 WORKDIR ./API-Gateway
 RUN mvn clean
 RUN mvn install -DskipTests
-ENTRYPOINT [ "java", "-jar", "target/api-gateway-0.0.1-SNAPSHOT.jar" ]
+RUN mv target/api-gateway-0.0.1-SNAPSHOT.jar target/application.jar
+ENTRYPOINT [ "java", "-jar", "target/application.jar" ]
