@@ -15,16 +15,18 @@ public class SwaggerConfiguration {
 	SwaggerService swaggerService;
 
 	public static Logger APIGatewayLogger = LoggerFactory.getLogger(SwaggerConfiguration.class);
-
+	
+	@Value("${swagger.path}")
+	private String swaggerPath;
+	
 	@Bean
 	public Swagger getSwagger() {
 
-		String filename = "/Swagger/swagger-update-qa.json";
+//		String filename = "/home/jeavio64/Downloads/swagger-update-qa.json";
+		
+		Swagger swagger = swaggerService.parse(swaggerPath);
 
-		Swagger swagger = swaggerService.parse(filename);
-
-		APIGatewayLogger.info("Swagger File Source : " + filename);
+		log.info("Swagger File Source : " + swaggerPath);
 
 		return swagger;
-	}
 }
