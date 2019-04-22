@@ -96,6 +96,25 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+		   <groupId>com.spotify</groupId>
+		   <artifactId>docker-maven-plugin</artifactId>
+		   <configuration>
+		     <imageName>dev-pipeline.ecarevault.com:5000/api-gateway</imageName>
+		     <dockerDirectory>./</dockerDirectory>
+		     <!--<baseImage>openjdk:8-jdk-alpine</baseImage>
+		     <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>--> 
+		     <resources>
+		        <resource>
+		          <targetPath>/</targetPath>
+		          <directory>${project.build.directory}</directory>
+		          <include>${project.build.finalName}.jar</include>
+		        </resource>
+		     </resources>
+		   </configuration>
+		 </plugin>
+
 		</plugins>
 	</build>
 
