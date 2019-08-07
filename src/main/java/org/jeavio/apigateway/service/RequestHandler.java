@@ -22,6 +22,9 @@ import org.jeavio.apigateway.model.CustomHttpRequest;
 import org.jeavio.apigateway.model.GatewayContext;
 import org.jeavio.apigateway.model.GatewayIntegration;
 import org.jeavio.apigateway.model.Input;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriTemplate;
@@ -29,9 +32,9 @@ import org.springframework.web.util.UriTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
+//@Slf4j
 public class RequestHandler {
-
+	private static final Logger log = LoggerFactory.getLogger("API");
 	@Autowired
 	SwaggerService swaggerService;
 
@@ -94,9 +97,12 @@ public class RequestHandler {
 		Input inputRequest = new Input();
 
 		String requestBody=request.getRequestBody();
-		
+
+		try {
 		if (requestBody != null && !requestBody.isEmpty()) {
 			inputRequest.putBody(requestBody);
+		}}catch(Exception e) {
+			inputRequest.putBody("{\"body\":"+requestBody+"}");
 		}
 
 		UriTemplate template = swaggerService.getUriTemplate(uri, method);
@@ -157,7 +163,7 @@ public class RequestHandler {
 				&& integrationObject.getRequestTemplates().get("application/json") != null) {
 
 			String template = integrationObject.getRequestTemplates().get("application/json");
-
+			
 			if (template.equals("__passthrough__")) {
 
 				log.debug("{} : {}   \"__passthrough__\" found for sending request body", method, uri);
@@ -166,7 +172,7 @@ public class RequestHandler {
 				return requestBody;
 
 			} else {
-
+//				template = "#set($inputRoot = $input.path('$.body')) [#foreach($elem in $inputRoot) { \"objectId\": \"$elem.objectId\", \"value\": \"$elem.value\",\"quillValue\": \"$elem.quillValue\", \"key\": \"$elem.key\", \"deleted\": \"$elem.deleted\"} #if($foreach.hasNext),#end#end]";
 				GatewayContext contextRequest = getGatewayContext(request);
 
 				String body = velocityTemplateHandler.processTemplate(uri, method, template, inputRequest,

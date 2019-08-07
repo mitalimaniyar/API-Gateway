@@ -5,6 +5,8 @@ import org.jeavio.apigateway.model.CustomHttpRequest;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +22,9 @@ import lombok.extern.slf4j.Slf4j;
  * 
  */
 @Service
-@Slf4j
+//@Slf4j
 public class CognitoCacheService {
-	
+	private static final Logger log = LoggerFactory.getLogger("API");
 	@Autowired
 	DualHashBidiMap cognitoIdMap;
 

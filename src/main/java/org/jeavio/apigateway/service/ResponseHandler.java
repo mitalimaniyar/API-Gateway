@@ -10,6 +10,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.util.EntityUtils;
 
 import org.jeavio.apigateway.model.IntegrationResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jeavio.apigateway.model.Input;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -20,9 +22,9 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
+//@Slf4j
 public class ResponseHandler {
-
+	private static final Logger log = LoggerFactory.getLogger("API");
 	@Autowired
 	SwaggerService swaggerService;
 
@@ -46,7 +48,7 @@ public class ResponseHandler {
 			responseBody = getResponseBody(uri, method, backendResponse);
 			headers = getResponseHeaders(uri, method, backendResponse);
 		} catch (Exception e) {
-			log.error("Error : ", e.getMessage());
+			log.error("Error : ", e);
 		}
 
 //      Populate Cognito Id cache

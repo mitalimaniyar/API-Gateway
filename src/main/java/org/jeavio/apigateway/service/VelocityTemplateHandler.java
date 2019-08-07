@@ -7,6 +7,8 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
 import org.jeavio.apigateway.model.GatewayContext;
 import org.jeavio.apigateway.model.Input;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
  * Used for processing of velocity template
  */
 @Service
-@Slf4j
+//@Slf4j
 public class VelocityTemplateHandler {
-	
+	private static final Logger log = LoggerFactory.getLogger("API");
 	@Autowired
 	EventCartridge eventCartridge;
 	

@@ -11,6 +11,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.jeavio.apigateway.model.CustomHttpRequest;
 import org.jeavio.apigateway.model.Swagger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,9 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
+//@Slf4j
 public class GatewayRequestProcessor {
-
+	private static final Logger log = LoggerFactory.getLogger("API");
 	@Autowired
 	Swagger swagger;
 
@@ -51,11 +53,11 @@ public class GatewayRequestProcessor {
 
 			backendResponse = (CloseableHttpResponse) httpclient.execute(backendRequest);
 
-			log.debug("{} : {} Request send to backend and Response obtained", method, uri);
+			log.info("{} : {} Request send to backend and Response obtained", method, uri);
 			
 		} catch (IOException e) {
 
-			log.error("Error : ",e.getMessage());
+			log.error("Error : ",e);
 		}
 
 		ResponseEntity<Object> response = responseHandler.getResponse(uri,method,backendResponse);
