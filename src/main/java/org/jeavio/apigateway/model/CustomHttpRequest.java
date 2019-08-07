@@ -8,8 +8,8 @@ import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
-@Getter
+//@Builder
+//@Getter
 public class CustomHttpRequest {
     
     private String scheme;
@@ -62,6 +62,127 @@ public class CustomHttpRequest {
     public void setAttribute(String name,Object value) {
     	attributes.put(name, value);
     }
+
+
+	public String getScheme() {
+		return scheme;
+	}
+
+
+	public void setScheme(String scheme) {
+		this.scheme = scheme;
+	}
+
+
+	public String getMethod() {
+		return method;
+	}
+
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
+
+
+	public String getRequestURI() {
+		return requestURI;
+	}
+
+
+	public void setRequestURI(String requestURI) {
+		this.requestURI = requestURI;
+	}
+
+
+	public String getQueryString() {
+		return queryString;
+	}
+
+
+	public void setQueryString(String queryString) {
+		this.queryString = queryString;
+	}
+
+
+	public String getRequestURL() {
+		return requestURL;
+	}
+
+
+	public void setRequestURL(String requestURL) {
+		this.requestURL = requestURL;
+	}
+
+
+	public Map<String, Object> getAttributes() {
+		return attributes;
+	}
+
+
+	public void setAttributes(Map<String, Object> attributes) {
+		this.attributes = attributes;
+	}
+
+
+	public String getContentType() {
+		return contentType;
+	}
+
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+
+	public int getContentLength() {
+		return contentLength;
+	}
+
+
+	public void setContentLength(int contentLength) {
+		this.contentLength = contentLength;
+	}
+
+
+	public String getRequestBody() {
+		return requestBody;
+	}
+
+
+	public void setRequestBody(String requestBody) {
+		this.requestBody = requestBody;
+	}
+
+
+	public Map<String, String> getRequestHeaders() {
+		return requestHeaders;
+	}
+
+
+	public void setRequestHeaders(Map<String, String> requestHeaders) {
+		this.requestHeaders = requestHeaders;
+	}
+
+
+	public Map<String, String> getParameterMap() {
+		return parameterMap;
+	}
+
+
+	public void setParameterMap(Map<String, String> parameterMap) {
+		this.parameterMap = parameterMap;
+	}
+
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+    
     
 }
     

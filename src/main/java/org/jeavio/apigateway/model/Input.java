@@ -3,6 +3,8 @@ package org.jeavio.apigateway.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.JsonPath;
@@ -14,9 +16,11 @@ import net.minidev.json.JSONValue;
  * Generally used to depict $input objct in Velocity Template
  */
 @Component
-@Slf4j
+//@Slf4j
 public class Input {
-
+	
+	private static final Logger log = LoggerFactory.getLogger(Input.class);
+	
 	private Map<String, Object> properties = new LinkedHashMap<>();
 
 	/*
