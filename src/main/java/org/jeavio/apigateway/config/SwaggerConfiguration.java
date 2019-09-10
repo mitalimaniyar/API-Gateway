@@ -18,6 +18,8 @@ public class SwaggerConfiguration {
 	private static final Logger log = LoggerFactory.getLogger("API");
 	@Autowired
 	SwaggerService swaggerService;
+
+	public static Logger APIGatewayLogger = LoggerFactory.getLogger(SwaggerConfiguration.class);
 	
 	@Value("${swagger.path}")
 	private String swaggerPath;
@@ -32,6 +34,5 @@ public class SwaggerConfiguration {
 		log.info("Swagger File Source : " + swaggerPath);
 
 		return swagger;
-	}
 }
 
