@@ -12,13 +12,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
+/*
+ * Used for processing of velocity template
+ */
 @Service
+//@Slf4j
 public class VelocityTemplateHandler {
-	
+	private static final Logger log = LoggerFactory.getLogger("API");
 	@Autowired
 	EventCartridge eventCartridge;
-	
-	public static Logger log = LoggerFactory.getLogger(VelocityTemplateHandler.class);
 	
 	private VelocityEngine velocityEngine = new VelocityEngine();
 	

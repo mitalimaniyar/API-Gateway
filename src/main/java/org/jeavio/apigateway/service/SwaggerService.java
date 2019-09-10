@@ -1,7 +1,6 @@
 package org.jeavio.apigateway.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,30 +15,43 @@ import org.springframework.web.util.UriTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Service
-public class SwaggerService {
+import lombok.extern.slf4j.Slf4j;
 
+/*
+ * Provides an interface that is used in communication with swagger object for
+ * request/response processing
+ * 
+ * 1.parse : used to parse swagger.json file to swagger object
+ * 2.getGatewayIntegration : used to return x-amazon-apigateway-integration
+ *                           object correspond to a uri and method
+ * 3.getUriTemplate : used to get UriTemplate object from request uri and method
+ * 
+ */
+@Service
+//@Slf4j
+public class SwaggerService {
+	private static final Logger log = LoggerFactory.getLogger("API");
 	@Autowired
 	ObjectMapper objectMapper;
 
 	Swagger swagger;
 
-	public static Logger log = LoggerFactory.getLogger(SwaggerService.class);
-
 	public Swagger parse(String swaggerPath) {
 		swagger = new Swagger();
 		try {
+			File swaggerFile=new File(swaggerPath);
+			swagger = objectMapper.readValue(swaggerFile, Swagger.class);
 
-			swagger = objectMapper.readValue(new File(swaggerPath), Swagger.class);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			log.error("Error starting application");
+			log.error("Error : "+e);
+			System.exit(0);
 		}
 		return swagger;
 	}
 
 	public GatewayIntegration getGatewayIntegration(String uri, String method) {
+		
 		// Check whether the request method is allowed
 		UriTemplate matchedTemplate = getUriTemplate(uri, method);
 		
@@ -56,6 +68,7 @@ public class SwaggerService {
 			log.debug("{} : {} Matched URI: {}", method, uri, uri);
 			return new UriTemplate(uri);
 		} else {
+			
 //        	 //Get List of UriTemplate objects
 			List<UriTemplate> templateList = new ArrayList<UriTemplate>();
 			for (String key : urlSet) {
@@ -63,7 +76,7 @@ public class SwaggerService {
 				templateList.add(uriTemplate);
 			}
 
-//			 //Check
+//			 //Check matching template
 			UriTemplate matchedTemplate = null;
 			for (UriTemplate urit : templateList) {
 				if (urit.matches(uri)) {

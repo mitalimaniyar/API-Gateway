@@ -9,23 +9,39 @@ import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.JsonPath;
 
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONValue;
 
+/*
+ * Generally used to depict $input objct in Velocity Template
+ */
 @Component
+//@Slf4j
 public class Input {
-
+	
+	private static final Logger log = LoggerFactory.getLogger(Input.class);
+	
 	private Map<String, Object> properties = new LinkedHashMap<>();
 
-	public static Logger log = LoggerFactory.getLogger(Input.class);
-
-//	Method for $input in VTL
+	/*
+	 * Below methods are generally used in Velocity references in $input object
+	 * 
+	 * 1.path : Takes a JSONPath expression string (x) and returns an object
+	 * representation of the result. 2.json : This function evaluates a JSONPath
+	 * expression and returns the results as a JSON string.
+	 * 
+	 * path returns object i.e. value of a key as object & json returns jsonString
+	 * i.e. with quotes,colon etc.
+	 * 
+	 * 3.params(x):return param of key=x 4.params:return all params i.e. map
+	 */
 	public Object path(String reference) {
 		Object patht = null;
 		try {
 			patht = JsonPath.read(properties, reference);
 		} catch (Exception e) {
 			log.error("Exception occured in parsing json reference {}", reference);
-			log.error("Error: ", e.getMessage());
+			log.error("Error: ", e);
 			return "";
 		}
 		return patht;
@@ -49,7 +65,15 @@ public class Input {
 		return properties;
 	}
 
-//	Method for setting $input
+	/*
+	 * Below two methods are used to set values in Object which is going to be
+	 * referred as $input in velocity reference or else treated as request payload
+	 * as Map
+	 * 
+	 * 1.putAll method : same as putAll method of Map 2.putBody method : takes
+	 * request/response body as string and convert it to map using Jsonpath function
+	 * and put it in properties
+	 */
 	public void putAll(Map<String, String> map) {
 		properties.putAll(map);
 	}

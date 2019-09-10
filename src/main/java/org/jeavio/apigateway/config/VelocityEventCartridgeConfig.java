@@ -5,6 +5,12 @@ import org.jeavio.apigateway.EventHandler.VelocityInvalidReferenceHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/*
+ * Used to create event cartridge with custom event handler
+ * 
+ * It's object can be used to bind with a velocity context
+ * during template evaluation 
+ */
 @Configuration
 public class VelocityEventCartridgeConfig {
 

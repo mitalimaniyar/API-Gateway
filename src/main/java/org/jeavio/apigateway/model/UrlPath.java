@@ -8,6 +8,14 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/*
+ * Encapsulate all methods that are allowed with a url for request
+ * 
+ * setX(object):create map entry with key as httpmethod and value as corresponding object
+ * X is httpMethod
+ * 
+ * Hierarchy : swagger->paths->{url}
+ */
 @Component
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UrlPath {

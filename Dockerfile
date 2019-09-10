@@ -1,6 +1,5 @@
-FROM maven:3-jdk-8-alpine
-ADD . /API-Gateway
+
+FROM openjdk:8-jdk-alpine
+ADD /api-gateway-0.0.1-SNAPSHOT.jar /API-Gateway/application.jar
 WORKDIR ./API-Gateway
-RUN mvn clean package -DskipTests
-RUN mv target/api-gateway-0.0.1-SNAPSHOT.jar target/application.jar
-ENTRYPOINT [ "java", "-jar", "target/application.jar" ]
+ENTRYPOINT ["java", "-jar", "application.jar"]

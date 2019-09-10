@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @CrossOrigin(origins = "*", methods= {RequestMethod.DELETE, RequestMethod.GET, RequestMethod.PATCH, RequestMethod.POST, RequestMethod.PUT}, allowedHeaders = "*")
 public class APIGatewayController {
@@ -25,8 +27,7 @@ public class APIGatewayController {
 	@Autowired
 	GatewayRequestProcessor requestProcessor;
 
-	public static Logger log = LoggerFactory.getLogger(APIGatewayController.class);
-
+	private static final Logger log = LoggerFactory.getLogger("API");
 	@RequestMapping(produces = { "application/json" })
 	public ResponseEntity<Object> processRequest(HttpServletRequest request,
 			@RequestParam Map<String, String> allParams, @RequestBody(required = false) String requestBody) {

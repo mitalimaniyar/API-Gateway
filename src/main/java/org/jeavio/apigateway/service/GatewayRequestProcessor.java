@@ -9,6 +9,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.jeavio.apigateway.model.CustomHttpRequest;
 import org.jeavio.apigateway.model.Swagger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-@Service
-public class GatewayRequestProcessor {
+import lombok.extern.slf4j.Slf4j;
 
+@Service
+//@Slf4j
+public class GatewayRequestProcessor {
+	private static final Logger log = LoggerFactory.getLogger("API");
 	@Autowired
 	Swagger swagger;
 
@@ -28,34 +32,43 @@ public class GatewayRequestProcessor {
 	@Autowired
 	ResponseHandler responseHandler;
 	
-	public static Logger log=LoggerFactory.getLogger(GatewayRequestProcessor.class);
+	@Autowired
+	CustomRequestCreator customRequestCreator;
 
-	public ResponseEntity<Object> processRequest(HttpServletRequest request, Map<String, String> allParams,
+	public ResponseEntity<Object> processRequest(HttpServletRequest servletRequest, Map<String, String> allParams,
 			String requestBody) {
 
 		// URL parsing
-		String uri = request.getRequestURI();
-		String method = request.getMethod().toLowerCase();
+		String uri = servletRequest.getRequestURI();
+		String method = servletRequest.getMethod().toLowerCase();
+		
+		CustomHttpRequest request=customRequestCreator.parseIncomingRequest(servletRequest, allParams, requestBody);
 
-		HttpUriRequest backendRequest = requestHandler.createRequest(request, allParams, requestBody);
+		HttpUriRequest backendRequest = requestHandler.createRequest(request);
 
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		CloseableHttpResponse backendResponse = null;
 		
-
 		try {
 
 			backendResponse = (CloseableHttpResponse) httpclient.execute(backendRequest);
 
-			log.debug("{} : {} Request send to backend and Response obtained", method, uri);
+			log.info("{} : {} Request send to backend and Response obtained", method, uri);
 			
-		} catch (IOException e1) {
+		} catch (IOException e) {
 
-			e1.printStackTrace();
+			log.error("Error : ",e);
 		}
 
 		ResponseEntity<Object> response = responseHandler.getResponse(uri,method,backendResponse);
-
+		
+		try {
+			
+			backendResponse.close();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
 		return response;
 	}
 
